@@ -21,7 +21,6 @@ namespace BalticAmadeus.FluentMdx.Lexer
         NumberExpression,
         LeftSquareBracket,
         RightSquareBracket,
-        IdentifierSeparator,
-        AnyExpression
+        IdentifierSeparator
     }
 }

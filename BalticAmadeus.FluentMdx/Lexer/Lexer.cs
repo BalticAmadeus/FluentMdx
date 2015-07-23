@@ -28,7 +28,6 @@ namespace BalticAmadeus.FluentMdx.Lexer
             new TokenDefinition(TokenType.AxisName, "(COLUMNS)|(ROWS)|(PAGES)|(CHAPTERS)|(SECTIONS)|(AXIS\\([0-9]+\\))"),
             new TokenDefinition(TokenType.NumberExpression, "[0-9]+"),
             new TokenDefinition(TokenType.IdentifierExpression, "[a-zA-Z_][a-zA-Z0-9 \\/\\\\\\-\\:]*[a-zA-Z0-9_]"),
-            new TokenDefinition(TokenType.AnyExpression, "[^\\[\\]]+"),
         };
 
         private readonly IEnumerable<TokenDefinition> _tokenDefinitions;
@@ -43,8 +42,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
             var endOfLineRegex = new Regex("[\\n|\\r]");
 
             int currentIndex = 0;
-            int currentLine = 1;
-
+            
             while (currentIndex < source.Length)
             {
                 if (source[currentIndex] == ' ')
@@ -69,17 +67,14 @@ namespace BalticAmadeus.FluentMdx.Lexer
                 }
 
                 if (matchedDefinition == null)
-                    throw new Exception(string.Format("Unrecognized symbol '{0}' at line {1}).", source[currentIndex], currentLine));
+                    throw new Exception(string.Format("Unrecognized symbol '{0}'.", source[currentIndex]));
                 
                 var value = source.Substring(currentIndex, matchLength);
 
                 yield return
                     new Token(matchedDefinition.Type, value);
 
-                var endOfLineMatch = endOfLineRegex.Match(value);
-                if (endOfLineMatch.Success)
-                    currentLine += 1;
-
+                endOfLineRegex.Match(value);
                 currentIndex += matchLength;
             }
 

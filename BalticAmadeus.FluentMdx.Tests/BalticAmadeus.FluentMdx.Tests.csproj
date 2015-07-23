@@ -55,6 +55,7 @@
     <Compile Include="MdxQueryTests.cs" />
     <Compile Include="MdxParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TwoWayEnumeratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

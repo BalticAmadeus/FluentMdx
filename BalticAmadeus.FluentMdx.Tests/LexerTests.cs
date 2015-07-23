@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BalticAmadeus.FluentMdx.Lexer;
 using NUnit.Framework;
 
 namespace BalticAmadeus.FluentMdx.Tests
 {
-    [TestFixture]
+    [TestFixture, ExcludeFromCodeCoverage]
     public class LexerTests
     {
         private Lexer.Lexer _lexer;
@@ -17,6 +16,18 @@ namespace BalticAmadeus.FluentMdx.Tests
         public void TestFixtureSetUp()
         {
             _lexer = new Lexer.Lexer();
+        }
+
+        [Test]
+        public void Tokenize_WithUndefinedSymbol_ThrowsExceptionWithMessage()
+        {
+            //ARRANGE
+            string source = "[$]";
+
+            //ACT
+            //ASSERT
+            var ex = Assert.Throws<Exception>(() => _lexer.Tokenize(source).ToList());
+            Assert.That(ex.Message, Is.EqualTo("Unrecognized symbol '$'."));
         }
 
         [Test]
@@ -51,10 +62,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ASSERT
             Assert.That(tokens.Count, Is.EqualTo(expectedTokens.Count));
             for (int i = 0; i < expectedTokens.Count; i++)
-            {
-                Assert.That(tokens[i].Value, Is.EqualTo(expectedTokens[i].Value));
-                Assert.That(tokens[i].Type, Is.EqualTo(expectedTokens[i].Type));
-            }
+                Assert.That(tokens[i].ToString(), Is.EqualTo(expectedTokens[i].ToString()));
         }
 
     }

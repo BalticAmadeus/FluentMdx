@@ -254,7 +254,7 @@ namespace BalticAmadeus.FluentMdx
                 return false;
 
             if (!IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.AnyExpression))
+                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 return false;
 
             var memberValue = enumerator.Current.Value;
@@ -294,7 +294,7 @@ namespace BalticAmadeus.FluentMdx
                 return false;
 
             if (!IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.AnyExpression))
+                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 return false;
 
             var rangeValue = enumerator.Current.Value;

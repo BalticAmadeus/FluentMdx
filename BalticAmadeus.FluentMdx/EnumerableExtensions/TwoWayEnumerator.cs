@@ -21,6 +21,9 @@ namespace BalticAmadeus.FluentMdx.EnumerableExtensions
 
         public bool MovePrevious()
         {
+            if (_index < 0)
+                throw new InvalidOperationException();
+
             --_index;
             return true;
         }
