@@ -1,46 +1,15 @@
-using System;
+using System.Collections.Generic;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxAxisParameter : IMdxExpression
+    public class MdxAxisParameter : MdxIdentifier
     {
-        private readonly string _name;
-
-        public MdxAxisParameter(string name)
+        public MdxAxisParameter(string title) : base(title)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("name");
-
-            _name = name;
         }
 
-        public string Name
+        internal MdxAxisParameter(IList<string> identifiers, IList<MdxFunction> appliedFunctions) : base(identifiers, appliedFunctions)
         {
-            get { return _name; }
-        }
-
-        public string GetStringExpression()
-        {
-            return Name;
-        }
-
-        public override string ToString()
-        {
-            return GetStringExpression();
-        }
-
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            var axisParameter = obj as MdxAxisParameter;
-            if (axisParameter == null)
-                return false;
-
-            return Name == axisParameter.Name;
         }
     }
 }

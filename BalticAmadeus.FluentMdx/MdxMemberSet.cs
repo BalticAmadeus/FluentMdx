@@ -45,10 +45,7 @@ namespace BalticAmadeus.FluentMdx
         {
             if (!Members.Any())
                 throw new ArgumentException("There are no members in set!");
-
-            if (_members.Count == 1)
-                return _members[0].GetStringExpression();
-
+            
             return string.Format(@"( {0} )",
                 string.Join(", ", Members));
         }

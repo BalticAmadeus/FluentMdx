@@ -1,46 +1,20 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxCube : IMdxExpression
+    public class MdxCube : MdxIdentifier
     {
-        private readonly string _name;
-
-        public MdxCube(string name)
+        public MdxCube(string title) : base(title)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("name");
-
-            _name = name;
         }
 
-        public string Name
+        internal MdxCube(IList<string> identifiers) : base(identifiers, new List<MdxFunction>())
         {
-            get { return _name; }
-        }
-
-        public string GetStringExpression()
-        {
-            return Name;
-        }
-
-        public override string ToString()
-        {
-            return GetStringExpression();
         }
         
-        public override int GetHashCode()
+        public override string GetStringExpression()
         {
-            return Name.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            var cube = obj as MdxCube;
-            if (cube == null)
-                return false;
-
-            return Name == cube.Name;
+            return string.Format("[{0}]", string.Join("].[", Identifiers));
         }
     }
 }

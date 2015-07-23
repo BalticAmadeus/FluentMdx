@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BalticAmadeus.FluentMdx.Extensions
+namespace BalticAmadeus.FluentMdx.EnumerableExtensions
 {
     internal interface ITwoWayEnumerator<out T> : IEnumerator<T>
     {

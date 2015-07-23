@@ -50,6 +50,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="LexerTests.cs" />
+    <Compile Include="MdxParserPartsTests.cs" />
     <Compile Include="MdxQueryTests.cs" />
     <Compile Include="MdxParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

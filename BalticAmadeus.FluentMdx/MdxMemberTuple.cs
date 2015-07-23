@@ -48,10 +48,7 @@ namespace BalticAmadeus.FluentMdx
         {
             if (!_members.Any())
                 throw new ArgumentException("There are no members in tuple!");
-
-            if (_members.Count == 1)
-                return _members[0].GetStringExpression();
-
+            
             return string.Format(@"{{ {0} }}",
                 string.Join(", ", Members));
         }

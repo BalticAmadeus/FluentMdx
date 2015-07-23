@@ -46,9 +46,6 @@ namespace BalticAmadeus.FluentMdx
             if (!Tuples.Any())
                 throw new ArgumentException("There are no tuples in set!");
 
-            if (_tuples.Count == 1)
-                return _tuples[0].GetStringExpression();
-
             return string.Format(@"( {0} )",
                 string.Join(", ", Tuples));
         }

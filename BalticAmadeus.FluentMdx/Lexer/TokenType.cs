@@ -11,13 +11,17 @@ namespace BalticAmadeus.FluentMdx.Lexer
         Comma,
         LeftCurlyBracket,
         RightCurlyBracket,
-        Member,
+        IdentifierExpression,
         AxisName,
         LeftRoundBracket,
         RightRoundBracket,
-        Colon,
+        RangeSeparator,
         Where,
-        Value,
-        Number
+        ValueSeparator,
+        NumberExpression,
+        LeftSquareBracket,
+        RightSquareBracket,
+        IdentifierSeparator,
+        AnyExpression
     }
 }

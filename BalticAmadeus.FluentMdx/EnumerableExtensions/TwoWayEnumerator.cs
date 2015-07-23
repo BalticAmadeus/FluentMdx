@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BalticAmadeus.FluentMdx.Extensions
+namespace BalticAmadeus.FluentMdx.EnumerableExtensions
 {
     internal class TwoWayEnumerator<T> : ITwoWayEnumerator<T>
     {
@@ -21,9 +21,6 @@ namespace BalticAmadeus.FluentMdx.Extensions
 
         public bool MovePrevious()
         {
-            if (_index <= 0)
-                return false;
-
             --_index;
             return true;
         }

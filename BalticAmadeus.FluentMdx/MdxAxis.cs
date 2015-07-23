@@ -6,43 +6,25 @@ namespace BalticAmadeus.FluentMdx
 {
     public class MdxAxis : IMdxExpression
     {
-        private readonly List<MdxAxisParameter> _parameters;
-        private readonly string _name;
+        private readonly string _title;
+        private readonly IList<MdxAxisParameter> _parameters;
 
-        internal MdxAxis(string name, List<MdxAxisParameter> parameters)
+        public MdxAxis(string title) : this(title, new List<MdxAxisParameter>()) { }
+
+        internal MdxAxis(string title, IList<MdxAxisParameter> parameters)
         {
             _parameters = parameters;
-            _name = name;
+            _title = title;
         }
 
-        public MdxAxis(string name) : this(name, new List<MdxAxisParameter>()) { }
-
-        public string Name
+        public string Title
         {
-            get { return _name; }
+            get { return _title; }
         }
 
         public IEnumerable<MdxAxisParameter> Parameters
         {
             get { return _parameters; }
-        }
-
-        public MdxAxis With(MdxAxisParameter axisParameter)
-        {
-            if (axisParameter == null)
-                throw new ArgumentNullException("axisParameter");
-
-            _parameters.Add(axisParameter);
-            return this;
-        }
-
-        public MdxAxis Without(MdxAxisParameter axisParameter)
-        {
-            if (axisParameter == null)
-                throw new ArgumentNullException("axisParameter");
-
-            _parameters.Remove(axisParameter);
-            return this;
         }
 
         public string GetStringExpression()
@@ -52,7 +34,7 @@ namespace BalticAmadeus.FluentMdx
 
             return string.Format(@"NON EMPTY {{ {0} }} ON {1}",
                 string.Join(", ", Parameters),
-                Name);
+                Title);
         }
 
         public override string ToString()
@@ -62,16 +44,13 @@ namespace BalticAmadeus.FluentMdx
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return Title.GetHashCode();
         }
 
-        public override bool Equals(object obj)
+        public MdxAxis With(MdxAxisParameter parameter)
         {
-            var axis = obj as MdxAxis;
-            if (axis == null)
-                return false;
-
-            return Name == axis.Name;
+            _parameters.Add(parameter);
+            return this;
         }
     }
 }

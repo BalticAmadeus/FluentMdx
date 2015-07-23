@@ -39,9 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\ITwoWayEnumerator.cs" />
-    <Compile Include="Extensions\TwoWayEnumerator.cs" />
-    <Compile Include="Extensions\TwoWayEnumeratorExtensions.cs" />
+    <Compile Include="EnumerableExtensions\ITwoWayEnumerator.cs" />
+    <Compile Include="EnumerableExtensions\TwoWayEnumerator.cs" />
+    <Compile Include="EnumerableExtensions\TwoWayEnumeratorExtensions.cs" />
     <Compile Include="IMdxExpression.cs" />
     <Compile Include="IMdxParser.cs" />
     <Compile Include="Lexer\ILexer.cs" />
@@ -52,9 +52,13 @@
     <Compile Include="MdxAxis.cs" />
     <Compile Include="MdxAxisParameter.cs" />
     <Compile Include="MdxCube.cs" />
+    <Compile Include="MdxFunction.cs" />
+    <Compile Include="MdxFunctionParameter.cs" />
+    <Compile Include="MdxIdentifier.cs" />
     <Compile Include="MdxMember.cs" />
     <Compile Include="MdxMemberSet.cs" />
     <Compile Include="MdxMemberTuple.cs" />
+    <Compile Include="MdxParsingException.cs" />
     <Compile Include="MdxQuery.cs" />
     <Compile Include="MdxParser.cs" />
     <Compile Include="MdxRangeMember.cs" />

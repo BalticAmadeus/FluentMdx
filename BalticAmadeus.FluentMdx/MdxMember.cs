@@ -1,43 +1,15 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public abstract class MdxMember : IMdxExpression
+    public class MdxMember : MdxIdentifier
     {
-        private readonly string _name;
-
-        protected MdxMember(string name)
+        public MdxMember(string title) : base(title)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("name");
-
-            _name = name;
         }
 
-        public string Name
+        internal MdxMember(IList<string> identifiers, IList<MdxFunction> appliedFunctions) : base(identifiers, appliedFunctions)
         {
-            get { return _name; }
-        }
-
-        public abstract string GetStringExpression();
-
-        public override string ToString()
-        {
-            return GetStringExpression();
-        }
-        
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            var member = obj as MdxMember;
-            if (member == null)
-                return false;
-
-            return Name == member.Name;
         }
     }
 }

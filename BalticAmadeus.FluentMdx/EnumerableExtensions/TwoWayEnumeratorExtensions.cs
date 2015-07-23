@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BalticAmadeus.FluentMdx.Extensions
+namespace BalticAmadeus.FluentMdx.EnumerableExtensions
 {
     internal static class TwoWayEnumeratorExtensions
     {

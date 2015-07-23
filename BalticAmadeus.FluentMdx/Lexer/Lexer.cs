@@ -12,18 +12,23 @@ namespace BalticAmadeus.FluentMdx.Lexer
             new TokenDefinition(TokenType.Non, "NON"),
             new TokenDefinition(TokenType.Empty, "EMPTY"),
             new TokenDefinition(TokenType.On, "ON"),
-            new TokenDefinition(TokenType.AxisName, "(COLUMNS)|(ROWS)"),
             new TokenDefinition(TokenType.From, "FROM"),
             new TokenDefinition(TokenType.Where, "WHERE"),
-            new TokenDefinition(TokenType.Member, "\\[[a-zA-Z0-9 \\/\\\\\\-]+\\](\\.\\[[a-zA-Z0-9 \\/\\\\\\-]+\\])*(\\.[a-zA-Z]+)*"),
             new TokenDefinition(TokenType.Comma, "\\,"),
             new TokenDefinition(TokenType.LeftCurlyBracket, "\\{"),
             new TokenDefinition(TokenType.RightCurlyBracket, "\\}"),
             new TokenDefinition(TokenType.LeftRoundBracket, "\\("),
             new TokenDefinition(TokenType.RightRoundBracket, "\\)"),
-            new TokenDefinition(TokenType.Colon, "\\:"),
-            new TokenDefinition(TokenType.Value, "\\.\\&\\[[a-zA-Z0-9 \\/\\\\\\-\\:]+\\]"),
-            new TokenDefinition(TokenType.Number, "[0-9]+([\\.\\,][0-9]+)?"),
+            new TokenDefinition(TokenType.LeftSquareBracket, "\\["),
+            new TokenDefinition(TokenType.RightSquareBracket, "\\]"),
+            new TokenDefinition(TokenType.RangeSeparator, "\\:"),
+            new TokenDefinition(TokenType.ValueSeparator, "\\.\\&"),
+            new TokenDefinition(TokenType.IdentifierSeparator, "\\."),
+            
+            new TokenDefinition(TokenType.AxisName, "(COLUMNS)|(ROWS)|(PAGES)|(CHAPTERS)|(SECTIONS)|(AXIS\\([0-9]+\\))"),
+            new TokenDefinition(TokenType.NumberExpression, "[0-9]+"),
+            new TokenDefinition(TokenType.IdentifierExpression, "[a-zA-Z_][a-zA-Z0-9 \\/\\\\\\-\\:]*[a-zA-Z0-9_]"),
+            new TokenDefinition(TokenType.AnyExpression, "[^\\[\\]]+"),
         };
 
         private readonly IEnumerable<TokenDefinition> _tokenDefinitions;

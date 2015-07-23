@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace BalticAmadeus.FluentMdx
 {
@@ -6,13 +6,13 @@ namespace BalticAmadeus.FluentMdx
     {
         private readonly string _value;
 
-        public MdxValueMember(string name, string value) : base(name)
+        public MdxValueMember(string title, string value) : base(title)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("name");
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentNullException("value");
+            _value = value;
+        }
 
+        internal MdxValueMember(IList<string> identifiers, string value) : base(identifiers, new List<MdxFunction>())
+        {
             _value = value;
         }
 
@@ -23,7 +23,7 @@ namespace BalticAmadeus.FluentMdx
 
         public override string GetStringExpression()
         {
-            return string.Format("{0}{1}", Name, Value);
+            return string.Format("[{0}].&[{1}]", string.Join("].[", Identifiers), Value);
         }
     }
 }

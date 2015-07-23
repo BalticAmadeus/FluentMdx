@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using BalticAmadeus.FluentMdx.Extensions;
+using BalticAmadeus.FluentMdx.EnumerableExtensions;
 using BalticAmadeus.FluentMdx.Lexer;
 
 namespace BalticAmadeus.FluentMdx
@@ -27,10 +28,22 @@ namespace BalticAmadeus.FluentMdx
             
             IMdxExpression expression;
             if (!TryParseQuery(enumerator, out expression))
-                throw new ArgumentException("Cannot parse the expression. There are no such rules.");
-        
+            {
+                var tokensLeft = new List<Token>();
+                while (enumerator.MoveNext())
+                    tokensLeft.Add(enumerator.Current);
+
+                throw new ArgumentException(string.Format("Cannot parse the expression. There are no such rules. {0}.", string.Join(", ", tokensLeft)));
+            }
+
             if (!IsNextTokenValid(enumerator, TokenType.LastToken))
-                throw new ArgumentException("There are tokens left in expression.");
+            {
+                var tokensLeft = new List<Token>();
+                while (enumerator.MoveNext())
+                    tokensLeft.Add(enumerator.Current);
+
+                throw new ArgumentException(string.Format("There are tokens left in expression. {0}.", string.Join(", ", tokensLeft)));
+            }
 
             return (MdxQuery) expression;
         }
@@ -79,8 +92,6 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.Where))
             {
-                //Parsing for query without WHERE clause is finished here.
-
                 expression = new MdxQuery(queryAxes, queryCubes);
                 return true;
             }
@@ -205,43 +216,97 @@ namespace BalticAmadeus.FluentMdx
             return true;
         }
 
-        private static bool TryParseMember(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseMember(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
         {
             expression = null;
 
-            if (!IsNextTokenValid(enumerator, TokenType.Member))
+            var identifiers = new List<string>();
+            var appliedFunctions = new List<MdxFunction>();
+            do
+            {
+                IMdxExpression function;
+                if (TryParseFunction(enumerator, out function))
+                {
+                    appliedFunctions.Add((MdxFunction)function);
+                    continue;
+                }
+
+                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+                    return false;
+
+                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                    return false;
+
+                identifiers.Add(enumerator.Current.Value);
+
+                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+                    return false;
+
+            } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
+
+            if (!IsNextTokenValid(enumerator, TokenType.ValueSeparator))
+            {
+                expression = new MdxMember(identifiers, appliedFunctions);
+                return true;
+            }
+
+            if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
                 return false;
 
-            var memberName = enumerator.Current.Value;
-
-            if (!IsNextTokenValid(enumerator, TokenType.Value))
+            if (!IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
+                !IsNextTokenValid(enumerator, TokenType.AnyExpression))
                 return false;
 
             var memberValue = enumerator.Current.Value;
 
-            if (!IsNextTokenValid(enumerator, TokenType.Colon))
+            if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+                return false;
+
+            if (!IsNextTokenValid(enumerator, TokenType.RangeSeparator))
             {
-                expression = new MdxValueMember(memberName, memberValue);
+                expression = new MdxValueMember(identifiers, memberValue);
                 return true;
             }
 
-            if (!IsNextTokenValid(enumerator, TokenType.Member))
+            var otherIdentifiers = new List<string>();
+            do
+            {
+                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+                    return false;
+
+                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                    return false;
+
+                otherIdentifiers.Add(enumerator.Current.Value);
+
+                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+                    return false;
+
+            } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
+
+            if (identifiers.Where((t, i) => t != otherIdentifiers[i]).Any())
+                throw new ArgumentException("Identifiers for range members must match!");
+
+            if (!IsNextTokenValid(enumerator, TokenType.ValueSeparator))
                 return false;
 
-            if (memberName != enumerator.Current.Value)
-                return false; //MEMBER NAMES MISMATCH
+            if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+                return false;
 
-            if (!IsNextTokenValid(enumerator, TokenType.Value))
-                return true;
+            if (!IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
+                !IsNextTokenValid(enumerator, TokenType.AnyExpression))
+                return false;
 
             var rangeValue = enumerator.Current.Value;
 
-            expression = new MdxRangeMember(memberName, memberValue, rangeValue);
+            if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+                return false;
 
+            expression = new MdxRangeMember(identifiers, memberValue, rangeValue);
             return true;
         }
 
-        private static bool TryParseAxis(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseAxis(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
         {
             expression = null;
 
@@ -270,7 +335,8 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.On))
                 return false;
 
-            if (!IsNextTokenValid(enumerator, TokenType.AxisName))
+            if (!IsNextTokenValid(enumerator, TokenType.AxisName) &&
+                !IsNextTokenValid(enumerator, TokenType.NumberExpression))
                 return false;
 
             string axisName = enumerator.Current.Value;
@@ -279,29 +345,125 @@ namespace BalticAmadeus.FluentMdx
             return true;
         }
 
-        private static bool TryParseAxisParameter(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseAxisParameter(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
         {
             expression = null;
 
-            if (!IsNextTokenValid(enumerator, TokenType.Member))
-                return false;
+            var identifiers = new List<string>();
+            var appliedFunctions = new List<MdxFunction>();
+            do
+            {
+                IMdxExpression function;
+                if (TryParseFunction(enumerator, out function))
+                {
+                    appliedFunctions.Add((MdxFunction)function);
+                    continue;
+                }
 
-            string axisParameterName = enumerator.Current.Value;
-            
-            expression = new MdxAxisParameter(axisParameterName);
+                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+                    return false;
+
+                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                    return false;
+
+                identifiers.Add(enumerator.Current.Value);
+
+                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+                    return false;
+
+            } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
+
+            expression = new MdxAxisParameter(identifiers, appliedFunctions);
             return true;
         }
 
-        private static bool TryParseCube(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseCube(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
         {
             expression = null;
 
-            if (!IsNextTokenValid(enumerator, TokenType.Member))
-                return false;
-            
-            string cubeName = enumerator.Current.Value;
+            var identifiers = new List<string>();
+            do
+            {
+                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+                    return false;
 
-            expression = new MdxCube(cubeName);
+                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                    return false;
+
+                identifiers.Add(enumerator.Current.Value);
+
+                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+                    return false;
+                
+            } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
+
+            expression = new MdxCube(identifiers);
+            return true;
+        }
+
+        internal static bool TryParseIdentifier(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        {
+            expression = null;
+
+            var identifiers = new List<string>();
+            var appliedFunctions = new List<MdxFunction>();
+            do
+            {
+                IMdxExpression function;
+                if (TryParseFunction(enumerator, out function))
+                {
+                    appliedFunctions.Add((MdxFunction) function);
+                    continue;
+                }
+                
+                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+                    return false;
+
+                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                    return false;
+
+                identifiers.Add(enumerator.Current.Value);
+
+                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+                    return false;
+
+            } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
+
+            expression = new MdxIdentifier(identifiers, appliedFunctions);
+            return true;
+        }
+
+        internal static bool TryParseFunction(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        {
+            expression = null;
+
+            if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                return false;
+
+            var functionTitle = enumerator.Current.Value;
+
+            if (!IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
+            {
+                expression = new MdxFunction(functionTitle);
+                return true;
+            }
+
+
+            var functionParameters = new List<string>();
+            do
+            {
+                if (!IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
+                    !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                    return false;
+
+                functionParameters.Add(enumerator.Current.Value);
+
+            } while (IsNextTokenValid(enumerator, TokenType.Comma));
+
+            if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
+                return false;
+
+            expression = new MdxFunction(functionTitle, functionParameters);
             return true;
         }
     }

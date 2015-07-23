@@ -1,8 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using BalticAmadeus.FluentMdx.Lexer;
+using NUnit.Framework;
 
 namespace BalticAmadeus.FluentMdx.Tests
 {
-    [TestFixture]
+    [TestFixture, ExcludeFromCodeCoverage]
     public class MdxParserTests
     {
         private MdxParser _parserSut;
@@ -71,12 +74,17 @@ namespace BalticAmadeus.FluentMdx.Tests
                                        "FROM [Cube] " +
                                        "WHERE [Dimension Hierarchy].[Dimension].[Dimension Key].&[1]";
 
+            const string expectedString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM [Cube] " +
+                                       "WHERE { [Dimension Hierarchy].[Dimension].[Dimension Key].&[1] }";
+
             //ACT
             var query = _parserSut.ParseQuery(queryString);
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -87,13 +95,18 @@ namespace BalticAmadeus.FluentMdx.Tests
                                        "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                        "FROM [Cube] " +
                                        "WHERE [Dimension Hierarchy].[Dimension].[Dimension Key].&[1]:[Dimension Hierarchy].[Dimension].[Dimension Key].&[2]";
+            
+            const string expectedString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM [Cube] " +
+                                       "WHERE { [Dimension Hierarchy].[Dimension].[Dimension Key].&[1]:[Dimension Hierarchy].[Dimension].[Dimension Key].&[2] }";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -122,12 +135,17 @@ namespace BalticAmadeus.FluentMdx.Tests
                                        "FROM [Cube] " +
                                        "WHERE ( [Dimension1 Hierarchy].[Dimension1].[Dimension1 Key].&[1], [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[2] )";
 
+            const string expectedString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM [Cube] " +
+                                       "WHERE { ( [Dimension1 Hierarchy].[Dimension1].[Dimension1 Key].&[1], [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[2] ) }";
+
             //ACT
             var query = _parserSut.ParseQuery(queryString);
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -137,12 +155,12 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string queryString = "SELECT " +
                                        "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                        "FROM [Cube] " +
-                                       "WHERE { ( [Dimension1 Hierarchy].[Dimension1].[Dimension1 Key].&[1], [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[2] ) }";
+                                       "WHERE ( [Dimension1 Hierarchy].[Dimension1].[Dimension1 Key].&[1], [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[2] )";
 
             const string expectedString = "SELECT " +
                                           "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                           "FROM [Cube] " +
-                                          "WHERE ( [Dimension1 Hierarchy].[Dimension1].[Dimension1 Key].&[1], [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[2] )";
+                                          "WHERE { ( [Dimension1 Hierarchy].[Dimension1].[Dimension1 Key].&[1], [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[2] ) }";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);
@@ -164,12 +182,20 @@ namespace BalticAmadeus.FluentMdx.Tests
                                        "{ [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[1], [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[2] } " +
                                        ")";
 
+            const string expectedString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM [Cube] " +
+                                       "WHERE { ( " +
+                                       "{ [Dimension1 Hierarchy].[Dimension1].[Dimension1 Key].&[1], [Dimension1 Hierarchy].[Dimension1].[Dimension1 Key].&[2] }, " +
+                                       "{ [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[1], [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[2] } " +
+                                       ") }";
+
             //ACT
             var query = _parserSut.ParseQuery(queryString);
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
         }
     }
 }
