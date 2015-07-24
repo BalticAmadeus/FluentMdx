@@ -6,12 +6,10 @@ namespace BalticAmadeus.FluentMdx
     {
         private readonly string _value;
 
-        public MdxValueMember(string title, string value) : base(title)
-        {
-            _value = value;
-        }
+        public MdxValueMember(string value, params string[] titles) : this(titles, value) { }
 
-        internal MdxValueMember(IList<string> identifiers, string value) : base(identifiers, new List<MdxFunction>())
+        internal MdxValueMember(IList<string> identifiers, string value)
+            : base(new List<string>(identifiers), new List<MdxFunction>())
         {
             _value = value;
         }

@@ -26,9 +26,11 @@ namespace BalticAmadeus.FluentMdx
             get { return _functionParameters; }
         }
 
-        public MdxFunction WithParameter(string parameter)
+        public MdxFunction WithParameters(params string[] parameters)
         {
-            _functionParameters.Add(parameter);
+            foreach (var parameter in parameters)
+                _functionParameters.Add(parameter);
+            
             return this;
         }
 

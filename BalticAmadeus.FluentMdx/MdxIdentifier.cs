@@ -8,7 +8,8 @@ namespace BalticAmadeus.FluentMdx
         private readonly IList<string> _identifiers;
         private readonly IList<MdxFunction> _appliedFunctions;
 
-        public MdxIdentifier(string title) : this(new List<string>{title}, new List<MdxFunction>()) { }
+        public MdxIdentifier(params string[] titles) 
+            : this(new List<string>(titles), new List<MdxFunction>()) { }
 
         internal MdxIdentifier(IList<string> identifiers, IList<MdxFunction> appliedFunctions)
         {
@@ -59,7 +60,7 @@ namespace BalticAmadeus.FluentMdx
 
     public static class MdxIdentifierExtensions
     {
-        public static T WithNameParts<T>(this T identifier, params string[] nameParts) where T : MdxIdentifier
+        public static T AppendNames<T>(this T identifier, params string[] nameParts) where T : MdxIdentifier
         {
             foreach (var namePart in nameParts)
                 identifier.IdentifiersInternal.Add(namePart);               

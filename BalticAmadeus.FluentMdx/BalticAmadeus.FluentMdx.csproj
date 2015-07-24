@@ -49,7 +49,6 @@
     <Compile Include="MdxAxisParameter.cs" />
     <Compile Include="MdxCube.cs" />
     <Compile Include="MdxFunction.cs" />
-    <Compile Include="MdxFunctionParameter.cs" />
     <Compile Include="MdxIdentifier.cs" />
     <Compile Include="MdxMember.cs" />
     <Compile Include="MdxMemberSet.cs" />

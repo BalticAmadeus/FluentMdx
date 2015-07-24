@@ -7,13 +7,10 @@ namespace BalticAmadeus.FluentMdx
         private readonly string _valueFrom;
         private readonly string _valueTo;
 
-        public MdxRangeMember(string title, string valueFrom, string valueTo) : base(title)
-        {
-            _valueFrom = valueFrom;
-            _valueTo = valueTo;
-        }
+        public MdxRangeMember(string valueFrom, string valueTo, params string[] titles)
+            : this(titles, valueFrom, valueTo) { }
 
-        internal MdxRangeMember(IList<string> identifiers, string valueFrom, string valueTo) : base(identifiers, new List<MdxFunction>())
+        internal MdxRangeMember(IList<string> identifiers, string valueFrom, string valueTo) : base(new List<string>(identifiers), new List<MdxFunction>())
         {
             _valueFrom = valueFrom;
             _valueTo = valueTo;

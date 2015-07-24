@@ -4,11 +4,13 @@ namespace BalticAmadeus.FluentMdx
 {
     public class MdxCube : MdxIdentifier
     {
-        public MdxCube(string title) : base(title)
+        public MdxCube(params string[] titles) 
+            : this((IList<string>) titles)
         {
         }
 
-        internal MdxCube(IList<string> identifiers) : base(identifiers, new List<MdxFunction>())
+        internal MdxCube(IList<string> identifiers) 
+            : base(identifiers, new List<MdxFunction>())
         {
         }
         
