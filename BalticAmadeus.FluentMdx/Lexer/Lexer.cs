@@ -12,6 +12,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
         {
             TokenDefinitions = new List<TokenDefinition>
             {
+                new TokenDefinition(TokenType.DimensionProperty,
+                    "(CATALOG_NAME)|(CHILDREN_CARDINALITY)|(CUSTOM_ROLLUP_PROPERTIES)|(DESCRIPTION)|(DIMENSION_UNIQUE_NAME)|(HIERARCHY_UNIQUE_NAME)|(IS_DATAMEMBER)|(IS_PLACEHOLDERMEMBER)|(KEY0)|(LCID)|(LEVEL_NUMBER)|(LEVEL_UNIQUE_NAME)|(MEMBER_CAPTION)|(MEMBER_KEY)|(MEMBER_NAME)|(MEMBER_TYPE)|(MEMBER_UNIQUE_NAME)|(MEMBER_VALUE)|(PARENT_COUNT)|(PARENT_LEVEL)|(PARENT_UNIQUE_NAME)|(SKIPPED_LEVELS)|(UNARY_OPERATOR)|(UNIQUE_NAME)|(CUSTOM_ROLLUP)"),
                 new TokenDefinition(TokenType.Select, "SELECT"),
                 new TokenDefinition(TokenType.Non, "NON"),
                 new TokenDefinition(TokenType.Empty, "EMPTY"),
@@ -28,11 +30,9 @@ namespace BalticAmadeus.FluentMdx.Lexer
                 new TokenDefinition(TokenType.RangeSeparator, "\\:"),
                 new TokenDefinition(TokenType.ValueSeparator, "\\.\\&"),
                 new TokenDefinition(TokenType.IdentifierSeparator, "\\."),
-
+                
                 new TokenDefinition(TokenType.Properties, "PROPERTIES"),
                 new TokenDefinition(TokenType.Dimension, "DIMENSION"),
-                new TokenDefinition(TokenType.DimensionProperty,
-                    "(CATALOG_NAME)|(CHILDREN_CARDINALITY)|(CUSTOM_ROLLUP)|(CUSTOM_ROLLUP_PROPERTIES)|(DESCRIPTION)|(DIMENSION_UNIQUE_NAME)|(HIERARCHY_UNIQUE_NAME)|(IS_DATAMEMBER)|(IS_PLACEHOLDERMEMBER)|(KEY0)|(LCID)|(LEVEL_NUMBER)|(LEVEL_UNIQUE_NAME)|(MEMBER_CAPTION)|(MEMBER_KEY)|(MEMBER_NAME)|(MEMBER_TYPE)|(MEMBER_UNIQUE_NAME)|(MEMBER_VALUE)|(PARENT_COUNT)|(PARENT_LEVEL)|(PARENT_UNIQUE_NAME)|(SKIPPED_LEVELS)|(UNARY_OPERATOR)|(UNIQUE_NAME)"),
                 new TokenDefinition(TokenType.AxisName,
                     "(COLUMNS)|(ROWS)|(PAGES)|(CHAPTERS)|(SECTIONS)|(AXIS\\([0-9]+\\))"),
                 new TokenDefinition(TokenType.IdentifierExpression,

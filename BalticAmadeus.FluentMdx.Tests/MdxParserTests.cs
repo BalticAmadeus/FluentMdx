@@ -33,6 +33,26 @@ namespace BalticAmadeus.FluentMdx.Tests
         }
 
         [Test]
+        public void ParseQuery_WithSingleAxisParameterAndDimensionProperties_ReturnsParsedQuery()
+        {
+            //ARRANGE   
+            const string queryString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } " +
+                                       "DIMENSION PROPERTIES CATALOG_NAME, CHILDREN_CARDINALITY, CUSTOM_ROLLUP, CUSTOM_ROLLUP_PROPERTIES, DESCRIPTION, " +
+                                       "DIMENSION_UNIQUE_NAME, HIERARCHY_UNIQUE_NAME, IS_DATAMEMBER, IS_PLACEHOLDERMEMBER, KEY0, LCID, LEVEL_NUMBER, LEVEL_UNIQUE_NAME, " +
+                                       "MEMBER_CAPTION, MEMBER_KEY, MEMBER_NAME, MEMBER_TYPE, MEMBER_UNIQUE_NAME, MEMBER_VALUE, PARENT_COUNT, PARENT_LEVEL, " +
+                                       "PARENT_UNIQUE_NAME, SKIPPED_LEVELS, UNARY_OPERATOR, UNIQUE_NAME ON COLUMNS " +
+                                       "FROM [Cube]";
+
+            //ACT
+            var query = _parserSut.ParseQuery(queryString);
+
+            //ASSERT
+            Assert.That(query, Is.Not.Null);
+            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+        }
+
+        [Test]
         public void ParseQuery_WithMultipleAxisParameters_ReturnsParsedQuery()
         {
             //ARRANGE   
