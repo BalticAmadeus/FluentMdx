@@ -51,7 +51,7 @@ namespace BalticAmadeus.FluentMdx.Tests
                 new Token(TokenType.RightSquareBracket, "]"),
                 new Token(TokenType.ValueSeparator, ".&"),
                 new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.NumberExpression, "1"),
+                new Token(TokenType.IdentifierExpression, "1"),
                 new Token(TokenType.RightSquareBracket, "]"),
                 new Token(TokenType.LastToken, ""),
             };

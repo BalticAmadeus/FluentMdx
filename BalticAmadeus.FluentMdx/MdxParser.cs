@@ -252,8 +252,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
                 return false;
 
-            if (!IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+            if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 return false;
 
             var memberValue = enumerator.Current.Value;
@@ -292,8 +291,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
                 return false;
 
-            if (!IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+            if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 return false;
 
             var rangeValue = enumerator.Current.Value;
@@ -335,7 +333,7 @@ namespace BalticAmadeus.FluentMdx
                 return false;
 
             if (!IsNextTokenValid(enumerator, TokenType.AxisName) &&
-                !IsNextTokenValid(enumerator, TokenType.NumberExpression))
+                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 return false;
 
             string axisName = enumerator.Current.Value;
@@ -451,8 +449,7 @@ namespace BalticAmadeus.FluentMdx
             var functionParameters = new List<string>();
             do
             {
-                if (!IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                    !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                     return false;
 
                 functionParameters.Add(enumerator.Current.Value);

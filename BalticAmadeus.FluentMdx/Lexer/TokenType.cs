@@ -18,7 +18,6 @@ namespace BalticAmadeus.FluentMdx.Lexer
         RangeSeparator,
         Where,
         ValueSeparator,
-        NumberExpression,
         LeftSquareBracket,
         RightSquareBracket,
         IdentifierSeparator

@@ -58,9 +58,9 @@ namespace BalticAmadeus.FluentMdx.Tests
                 new Token(TokenType.IdentifierSeparator, "."),
                 new Token(TokenType.IdentifierExpression, "FUNCTION"),
                 new Token(TokenType.LeftRoundBracket, "("),
-                new Token(TokenType.NumberExpression, "1"),
+                new Token(TokenType.IdentifierExpression, "1"),
                 new Token(TokenType.Comma, ","),
-                new Token(TokenType.NumberExpression, "2"),
+                new Token(TokenType.IdentifierExpression, "2"),
                 new Token(TokenType.RightRoundBracket, ")"),
                 new Token(TokenType.IdentifierSeparator, "."),
                 new Token(TokenType.IdentifierExpression, "FUNCTION"),
@@ -96,9 +96,9 @@ namespace BalticAmadeus.FluentMdx.Tests
                 new Token(TokenType.IdentifierSeparator, "."),
                 new Token(TokenType.IdentifierExpression, "FUNCTION"),
                 new Token(TokenType.LeftRoundBracket, "("),
-                new Token(TokenType.NumberExpression, "1"),
+                new Token(TokenType.IdentifierExpression, "1"),
                 new Token(TokenType.Comma, ","),
-                new Token(TokenType.NumberExpression, "2"),
+                new Token(TokenType.IdentifierExpression, "2"),
                 new Token(TokenType.RightRoundBracket, ")"),
                 new Token(TokenType.IdentifierSeparator, "."),
                 new Token(TokenType.IdentifierExpression, "FUNCTION"),
@@ -122,9 +122,9 @@ namespace BalticAmadeus.FluentMdx.Tests
             {
                 new Token(TokenType.IdentifierExpression, "FUNCTION"),
                 new Token(TokenType.LeftRoundBracket, "("),
-                new Token(TokenType.NumberExpression, "1"),
+                new Token(TokenType.IdentifierExpression, "1"),
                 new Token(TokenType.Comma, ","),
-                new Token(TokenType.NumberExpression, "2"),
+                new Token(TokenType.IdentifierExpression, "2"),
                 new Token(TokenType.RightRoundBracket, ")")
             };
 
@@ -161,9 +161,9 @@ namespace BalticAmadeus.FluentMdx.Tests
                 new Token(TokenType.IdentifierSeparator, "."),
                 new Token(TokenType.IdentifierExpression, "FUNCTION"),
                 new Token(TokenType.LeftRoundBracket, "("),
-                new Token(TokenType.NumberExpression, "1"),
+                new Token(TokenType.IdentifierExpression, "1"),
                 new Token(TokenType.Comma, ","),
-                new Token(TokenType.NumberExpression, "2"),
+                new Token(TokenType.IdentifierExpression, "2"),
                 new Token(TokenType.RightRoundBracket, ")"),
                 new Token(TokenType.IdentifierSeparator, "."),
                 new Token(TokenType.IdentifierExpression, "FUNCTION"),
@@ -234,7 +234,7 @@ namespace BalticAmadeus.FluentMdx.Tests
                 new Token(TokenType.RightSquareBracket, "]"),
                 new Token(TokenType.ValueSeparator, ".&"),
                 new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.NumberExpression, "1"),
+                new Token(TokenType.IdentifierExpression, "1"),
                 new Token(TokenType.RightSquareBracket, "]")
             };
 

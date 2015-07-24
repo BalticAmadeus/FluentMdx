@@ -26,8 +26,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
             new TokenDefinition(TokenType.IdentifierSeparator, "\\."),
             
             new TokenDefinition(TokenType.AxisName, "(COLUMNS)|(ROWS)|(PAGES)|(CHAPTERS)|(SECTIONS)|(AXIS\\([0-9]+\\))"),
-            new TokenDefinition(TokenType.NumberExpression, "[0-9]+"),
-            new TokenDefinition(TokenType.IdentifierExpression, "[a-zA-Z_][a-zA-Z0-9 \\/\\\\\\-\\:]*[a-zA-Z0-9_]"),
+            new TokenDefinition(TokenType.IdentifierExpression, "[a-zA-Z0-9 \\/\\\\\\-\\:]*[a-zA-Z0-9\\/\\\\\\-\\:]"),
         };
 
         private readonly IEnumerable<TokenDefinition> _tokenDefinitions;
