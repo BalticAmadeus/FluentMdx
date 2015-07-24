@@ -328,7 +328,32 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.RightCurlyBracket))
                 return false;
-            
+
+            var axisProperties = new List<string>();
+            if (IsNextTokenValid(enumerator, TokenType.Dimension))
+            {
+                if (!IsNextTokenValid(enumerator, TokenType.Properties))
+                    return false;
+
+                do
+                {
+                    if (!IsNextTokenValid(enumerator, TokenType.DimensionProperty))
+                        return false;
+
+                    axisProperties.Add(enumerator.Current.Value);
+                } while (IsNextTokenValid(enumerator, TokenType.Comma));
+            }
+            else if (IsNextTokenValid(enumerator, TokenType.Properties))
+            {
+                do
+                {
+                    if (!IsNextTokenValid(enumerator, TokenType.DimensionProperty))
+                        return false;
+
+                    axisProperties.Add(enumerator.Current.Value);
+                } while (IsNextTokenValid(enumerator, TokenType.Comma));
+            }
+
             if (!IsNextTokenValid(enumerator, TokenType.On))
                 return false;
 
@@ -338,7 +363,7 @@ namespace BalticAmadeus.FluentMdx
 
             string axisName = enumerator.Current.Value;
 
-            expression = new MdxAxis(axisName, axisParameters);
+            expression = new MdxAxis(axisName, axisParameters, axisProperties);
             return true;
         }
 

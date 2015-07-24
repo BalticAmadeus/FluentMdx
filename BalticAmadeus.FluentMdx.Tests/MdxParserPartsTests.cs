@@ -187,6 +187,38 @@ namespace BalticAmadeus.FluentMdx.Tests
         }
 
         [Test]
+        public void ParseAxis_WithParameterAndDimensionProperties_SecceedsAndReturnsAxis()
+        {
+            //ARRANGE
+            var list = new List<Token>
+            {
+                new Token(TokenType.Non, "NON"),
+                new Token(TokenType.Empty, "EMPTY"),
+                new Token(TokenType.LeftCurlyBracket, "{"),
+                new Token(TokenType.LeftSquareBracket, "["),
+                new Token(TokenType.IdentifierExpression, "Aaa"),
+                new Token(TokenType.RightSquareBracket, "]"),
+                new Token(TokenType.RightCurlyBracket, "}"),
+                new Token(TokenType.Dimension, "DIMENSION"),
+                new Token(TokenType.Properties, "PROPERTIES"),
+                new Token(TokenType.DimensionProperty, "CATALOG_NAME"),
+                new Token(TokenType.Comma, ","),
+                new Token(TokenType.DimensionProperty, "CUSTOM_ROLLUP"),
+                new Token(TokenType.On, "ON"),
+                new Token(TokenType.AxisName, "COLUMNS"),
+            };
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseAxis(list.GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxAxis>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo("NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON COLUMNS"));
+        }
+
+        [Test]
         public void ParseCube_WithParameters_SecceedsAndReturnsCube()
         {
             //ARRANGE

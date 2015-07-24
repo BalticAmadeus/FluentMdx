@@ -8,12 +8,14 @@ namespace BalticAmadeus.FluentMdx
     {
         private readonly string _title;
         private readonly IList<MdxAxisParameter> _parameters;
+        private readonly IList<string> _properties; 
 
-        public MdxAxis(string title) : this(title, new List<MdxAxisParameter>()) { }
+        public MdxAxis(string title) : this(title, new List<MdxAxisParameter>(), new List<string>()) { }
 
-        internal MdxAxis(string title, IList<MdxAxisParameter> parameters)
+        internal MdxAxis(string title, IList<MdxAxisParameter> parameters, IList<string> properties)
         {
             _parameters = parameters;
+            _properties = properties;
             _title = title;
         }
 
@@ -27,13 +29,24 @@ namespace BalticAmadeus.FluentMdx
             get { return _parameters; }
         }
 
+        public IEnumerable<string> Properties
+        {
+            get { return _properties; }
+        }
+
         public string GetStringExpression()
         {
-            if (!_parameters.Any())
+            if (!Parameters.Any())
                 throw new ArgumentException("There are no axis parameters in axis!");
 
-            return string.Format(@"NON EMPTY {{ {0} }} ON {1}",
+            if (!Properties.Any())
+                return string.Format(@"NON EMPTY {{ {0} }} ON {1}",
+                    string.Join(", ", Parameters),
+                    Title);
+
+            return string.Format(@"NON EMPTY {{ {0} }} DIMENSION PROPERTIES {1} ON {2}",
                 string.Join(", ", Parameters),
+                string.Join(", ", Properties),
                 Title);
         }
 
@@ -50,6 +63,13 @@ namespace BalticAmadeus.FluentMdx
         public MdxAxis With(MdxAxisParameter parameter)
         {
             _parameters.Add(parameter);
+            return this;
+        }
+
+        public MdxAxis WithProperties(params string[] properties)
+        {
+            foreach (var property in properties)
+                _properties.Add(property);
             return this;
         }
     }

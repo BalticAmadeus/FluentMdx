@@ -12,15 +12,15 @@ namespace BalticAmadeus.FluentMdx.Tests
         {
             //ARRANGE
             const string expectedQueryString = "SELECT " +
-                                               "NON EMPTY { [Dimension Hierarchy].[Dimension] } ON COLUMNS " +
+                                               "NON EMPTY { [Dim Hierarchy].[Dim] } ON COLUMNS " +
                                                "FROM [Cube] " +
-                                               "WHERE { ( [Dimension Hierarchy].[Dimension].[Dimension Key].&[1] ) }";
+                                               "WHERE { ( [Dim Hierarchy].[Dim].[Dim Key].&[1] ) }";
 
             //ACT
             var query = new MdxQuery()
-                .On(new MdxAxis("COLUMNS").With(new MdxAxisParameter("Dimension Hierarchy").AppendNames("Dimension")))
+                .On(new MdxAxis("COLUMNS").With(new MdxAxisParameter("Dim Hierarchy").AppendNames("Dim")))
                 .From(new MdxCube("Cube"))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxValueMember("1", "Dimension Hierarchy", "Dimension", "Dimension Key"))));
+                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxValueMember("1", "Dim Hierarchy", "Dim", "Dim Key"))));
 
             //ASSERT
             Assert.That(query.ToString(), Is.EqualTo(expectedQueryString));
@@ -31,17 +31,17 @@ namespace BalticAmadeus.FluentMdx.Tests
         {
             //ARRANGE
             const string expectedQueryString = "SELECT " +
-                                               "NON EMPTY { [Dimension1 Hierarchy].[Dimension1] } ON COLUMNS, " +
-                                               "NON EMPTY { [Dimension2 Hierarchy].[Dimension2] } ON ROWS " +
+                                               "NON EMPTY { [Dim1 Hierarchy].[Dim1] } ON COLUMNS, " +
+                                               "NON EMPTY { [Dim2 Hierarchy].[Dim2] } ON ROWS " +
                                                "FROM [Cube] " +
-                                               "WHERE { ( [Dimension2 Hierarchy].[Dimension2].[Dimension2 Key].&[1] ) }";
+                                               "WHERE { ( [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[1] ) }";
 
             //ACT
             var query = new MdxQuery()
-                .On(new MdxAxis("COLUMNS").With(new MdxAxisParameter("Dimension1 Hierarchy", "Dimension1")))
-                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dimension2 Hierarchy", "Dimension2")))
+                .On(new MdxAxis("COLUMNS").With(new MdxAxisParameter("Dim1 Hierarchy", "Dim1")))
+                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dim2 Hierarchy", "Dim2")))
                 .From(new MdxCube("Cube"))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxValueMember("1", "Dimension2 Hierarchy", "Dimension2", "Dimension2 Key"))));
+                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxValueMember("1", "Dim2 Hierarchy", "Dim2", "Dim2 Key"))));
 
             //ASSERT
             Assert.That(query.ToString(), Is.EqualTo(expectedQueryString));
@@ -52,17 +52,17 @@ namespace BalticAmadeus.FluentMdx.Tests
         {
             //ARRANGE
             const string expectedQueryString = "SELECT " +
-                                               "NON EMPTY { [Dimension Hierarchy].[Dimension] } ON ROWS " +
+                                               "NON EMPTY { [Dim Hierarchy].[Dim] } ON ROWS " +
                                                "FROM [Cube1], [Cube2], [Cube3] " +
-                                               "WHERE { ( [Dimension Hierarchy].[Dimension].[Dimension Key].&[1]:[Dimension Hierarchy].[Dimension].[Dimension Key].&[4] ) }";
+                                               "WHERE { ( [Dim Hierarchy].[Dim].[Dim Key].&[1]:[Dim Hierarchy].[Dim].[Dim Key].&[4] ) }";
 
             //ACT
             var query = new MdxQuery()
-                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dimension Hierarchy", "Dimension")))
+                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dim Hierarchy", "Dim")))
                 .From(new MdxCube("Cube1"))
                 .From(new MdxCube("Cube2"))
                 .From(new MdxCube("Cube3"))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dimension Hierarchy", "Dimension", "Dimension Key"))));
+                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dim Hierarchy", "Dim", "Dim Key"))));
             
             //ASSERT
             Assert.That(query.ToString(), Is.EqualTo(expectedQueryString));
@@ -75,7 +75,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ACT
             var query = new MdxQuery()
                 .From(new MdxCube("Cube"))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dimension Hierarchy", "Dimension", "Dimension Key"))));
+                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dim Hierarchy", "Dim", "Dim Key"))));
             
 
             //ASSERT
@@ -89,7 +89,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ACT
             var query = new MdxQuery()
                 .On(new MdxAxis("ROWS"))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dimension Hierarchy", "Dimension", "Dimension Key"))));
+                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dim Hierarchy", "Dim", "Dim Key"))));
             
             //ASSERT
             Assert.Throws<ArgumentException>(() => { query.ToString(); }, "There are no axis parameters in axis!");
@@ -101,8 +101,8 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ARRANGE
             //ACT
             var query = new MdxQuery()
-                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dimension Hierarchy", "Dimension").AppendNames()))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dimension Hierarchy", "Dimension", "Dimension Key"))));
+                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dim Hierarchy", "Dim").AppendNames()))
+                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dim Hierarchy", "Dim", "Dim Key"))));
             
 
             //ASSERT

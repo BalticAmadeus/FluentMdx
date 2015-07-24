@@ -20,6 +20,9 @@ namespace BalticAmadeus.FluentMdx.Lexer
         ValueSeparator,
         LeftSquareBracket,
         RightSquareBracket,
-        IdentifierSeparator
+        IdentifierSeparator,
+        DimensionProperty,
+        Dimension,
+        Properties
     }
 }
