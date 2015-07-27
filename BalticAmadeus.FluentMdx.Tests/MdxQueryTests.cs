@@ -14,7 +14,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedQueryString = "SELECT " +
                                                "NON EMPTY { [Dim Hierarchy].[Dim] } ON COLUMNS " +
                                                "FROM [Cube] " +
-                                               "WHERE { ( [Dim Hierarchy].[Dim].[Dim Key].&[1] ) }";
+                                               "WHERE { ( { ( [Dim Hierarchy].[Dim].[Dim Key].&[1] ) } ) }";
 
             //ACT
             var query = new MdxQuery()
@@ -34,7 +34,7 @@ namespace BalticAmadeus.FluentMdx.Tests
                                                "NON EMPTY { [Dim1 Hierarchy].[Dim1] } ON COLUMNS, " +
                                                "NON EMPTY { [Dim2 Hierarchy].[Dim2] } ON ROWS " +
                                                "FROM [Cube] " +
-                                               "WHERE { ( [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[1] ) }";
+                                               "WHERE { ( { ( [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[1] ) } ) }";
 
             //ACT
             var query = new MdxQuery()
@@ -54,7 +54,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedQueryString = "SELECT " +
                                                "NON EMPTY { [Dim Hierarchy].[Dim] } ON ROWS " +
                                                "FROM [Cube1], [Cube2], [Cube3] " +
-                                               "WHERE { ( [Dim Hierarchy].[Dim].[Dim Key].&[1]:[Dim Hierarchy].[Dim].[Dim Key].&[4] ) }";
+                                               "WHERE { ( { ( [Dim Hierarchy].[Dim].[Dim Key].&[1]:[Dim Hierarchy].[Dim].[Dim Key].&[4] ) } ) }";
 
             //ACT
             var query = new MdxQuery()

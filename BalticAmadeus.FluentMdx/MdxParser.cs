@@ -94,29 +94,35 @@ namespace BalticAmadeus.FluentMdx
                 expression = new MdxQuery(queryAxes, queryCubes);
                 return true;
             }
-            
+
+            var whereClauses = new List<MdxTuple>();
+
             IMdxExpression member;
             if (TryParseMember(enumerator, out member))
             {
                 var memberTuple = new MdxMemberTuple().With((MdxMember) member);
+                whereClauses.Add(memberTuple);
 
-                expression = new MdxQuery(queryAxes, queryCubes, memberTuple);
+                expression = new MdxQuery(queryAxes, queryCubes, whereClauses);
                 return true;
             }
 
             IMdxExpression set;
             if (TryParseSet(enumerator, out set))
             {
-                var setTuple = new MdxSetTuple().With((MdxSet) set);
+                var setTuple = new MdxSetTuple().With((MdxSet)set);
+                whereClauses.Add(setTuple);
 
-                expression = new MdxQuery(queryAxes, queryCubes, setTuple);
+                expression = new MdxQuery(queryAxes, queryCubes, whereClauses);
                 return true;
             }
 
             IMdxExpression tuple;
             if (TryParseTuple(enumerator, out tuple))
             {
-                expression = new MdxQuery(queryAxes, queryCubes, (MdxTuple)tuple);
+                whereClauses.Add((MdxTuple)tuple);
+
+                expression = new MdxQuery(queryAxes, queryCubes, whereClauses);
                 return true;
             }
            

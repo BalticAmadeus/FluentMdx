@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using BalticAmadeus.FluentMdx.Lexer;
+﻿using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 namespace BalticAmadeus.FluentMdx.Tests
@@ -97,7 +95,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "SELECT " +
                                        "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                        "FROM [Cube] " +
-                                       "WHERE { [Dim Hierarchy].[Dim].[Dim Key].&[1] }";
+                                       "WHERE { ( { [Dim Hierarchy].[Dim].[Dim Key].&[1] } ) }";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);
@@ -119,7 +117,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "SELECT " +
                                        "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                        "FROM [Cube] " +
-                                       "WHERE { [Dim Hierarchy].[Dim].[Dim Key].&[1]:[Dim Hierarchy].[Dim].[Dim Key].&[2] }";
+                                       "WHERE { ( { [Dim Hierarchy].[Dim].[Dim Key].&[1]:[Dim Hierarchy].[Dim].[Dim Key].&[2] } ) }";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);
@@ -138,12 +136,17 @@ namespace BalticAmadeus.FluentMdx.Tests
                                        "FROM [Cube] " +
                                        "WHERE { [Dim Hierarchy].[Dim].[Dim Key].&[1], [Dim Hierarchy].[Dim].[Dim Key].&[3] }";
 
+            const string expectedString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM [Cube] " +
+                                       "WHERE { ( { [Dim Hierarchy].[Dim].[Dim Key].&[1], [Dim Hierarchy].[Dim].[Dim Key].&[3] } ) }";
+
             //ACT
             var query = _parserSut.ParseQuery(queryString);
 
             //ASSERT        
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -158,7 +161,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "SELECT " +
                                        "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                        "FROM [Cube] " +
-                                       "WHERE { ( [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1], [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[2] ) }";
+                                       "WHERE { ( { ( [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1], [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[2] ) } ) }";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);
@@ -180,7 +183,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "SELECT " +
                                           "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                           "FROM [Cube] " +
-                                          "WHERE { ( [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1], [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[2] ) }";
+                                          "WHERE { ( { ( [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1], [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[2] ) } ) }";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);
@@ -205,10 +208,10 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "SELECT " +
                                        "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                        "FROM [Cube] " +
-                                       "WHERE { ( " +
+                                       "WHERE { ( { ( " +
                                        "{ [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1], [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[2] }, " +
                                        "{ [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[1], [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[2] } " +
-                                       ") }";
+                                       ") } ) }";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);

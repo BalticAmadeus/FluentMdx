@@ -8,20 +8,17 @@ namespace BalticAmadeus.FluentMdx
     {
         private readonly IList<MdxCube> _cubes;
         private readonly IList<MdxAxis> _axes;
-        private MdxTuple _tuple;
+        private readonly IList<MdxTuple> _whereClauseTuples;
 
         public MdxQuery() : this(new List<MdxAxis>(), new List<MdxCube>()) { }
-        
-        internal MdxQuery(IList<MdxAxis> axes, IList<MdxCube> cubes, MdxTuple tuple = null)
-        {
-            if (axes == null)
-                throw new ArgumentNullException("axes");
-            if (cubes == null)
-                throw new ArgumentNullException("cubes");
 
+        internal MdxQuery(IList<MdxAxis> axes, IList<MdxCube> cubes) : this(axes, cubes, new List<MdxTuple>()) { }
+
+        internal MdxQuery(IList<MdxAxis> axes, IList<MdxCube> cubes, IList<MdxTuple> whereClauseTuples)
+        {
             _axes = axes;
             _cubes = cubes;
-            _tuple = tuple;
+            _whereClauseTuples = whereClauseTuples;
         }
 
         public IEnumerable<MdxCube> Cubes
@@ -34,9 +31,9 @@ namespace BalticAmadeus.FluentMdx
             get { return _axes; }
         }
 
-        public MdxTuple Tuple
+        public IEnumerable<MdxTuple> WhereClauseTuples
         {
-            get { return _tuple; }
+            get { return _whereClauseTuples; }
         }
 
         public MdxQuery On(MdxAxis axis)
@@ -45,15 +42,6 @@ namespace BalticAmadeus.FluentMdx
                 throw new ArgumentNullException("axis");
 
             _axes.Add(axis);
-            return this;
-        }
-
-        public MdxQuery WithoutOn(MdxAxis axis)
-        {
-            if (axis == null)
-                throw new ArgumentNullException("axis");
-
-            _axes.Remove(axis);
             return this;
         }
 
@@ -66,31 +54,9 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
-        public MdxQuery WithoutFrom(MdxCube cube)
-        {
-            if (cube == null)
-                throw new ArgumentNullException("cube");
-
-            _cubes.Remove(cube);
-            return this;
-        }
-
         public MdxQuery Where(MdxTuple tuple)
         {
-            if (tuple == null)
-                throw new ArgumentNullException("tuple");
-
-            _tuple = tuple;
-            return this;
-        }
-
-        public MdxQuery WithoutWhere(MdxTuple tuple)
-        {
-            if (tuple == null)
-                throw new ArgumentNullException("tuple");
-
-            if (Equals(_tuple, tuple))
-                _tuple = null;
+            _whereClauseTuples.Add(tuple);
             return this;
         }
 
@@ -101,15 +67,15 @@ namespace BalticAmadeus.FluentMdx
             if (!Cubes.Any())
                 throw new ArgumentException("There are no cubes in query!");
 
-            if (Tuple == null)
+            if (!WhereClauseTuples.Any())
                 return string.Format(@"SELECT {0} FROM {1}",
                     string.Join(", ", Axes),
                     string.Join(", ", Cubes));
 
-            return string.Format(@"SELECT {0} FROM {1} WHERE {2}",
+            return string.Format(@"SELECT {0} FROM {1} WHERE {{ ( {2} ) }}",
                 string.Join(", ", Axes),
                 string.Join(", ", Cubes),
-                Tuple);
+                string.Join(", ", WhereClauseTuples));
         }
 
         public override string ToString()
