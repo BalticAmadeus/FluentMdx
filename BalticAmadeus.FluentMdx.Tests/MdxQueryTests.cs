@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 
 namespace BalticAmadeus.FluentMdx.Tests
@@ -18,7 +17,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             var query = new MdxQuery()
-                .On(new MdxAxis("COLUMNS").With(new MdxAxisParameter("Dim Hierarchy").AppendNames("Dim")))
+                .On(new MdxAxis("COLUMNS").With(new MdxMember("Dim Hierarchy").AppendNames("Dim")))
                 .From(new MdxCube("Cube"))
                 .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxValueMember("1", "Dim Hierarchy", "Dim", "Dim Key"))));
 
@@ -38,8 +37,8 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             var query = new MdxQuery()
-                .On(new MdxAxis("COLUMNS").With(new MdxAxisParameter("Dim1 Hierarchy", "Dim1")))
-                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dim2 Hierarchy", "Dim2")))
+                .On(new MdxAxis("COLUMNS").With(new MdxMember("Dim1 Hierarchy", "Dim1")))
+                .On(new MdxAxis("ROWS").With(new MdxMember("Dim2 Hierarchy", "Dim2")))
                 .From(new MdxCube("Cube"))
                 .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxValueMember("1", "Dim2 Hierarchy", "Dim2", "Dim2 Key"))));
 
@@ -58,7 +57,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             var query = new MdxQuery()
-                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dim Hierarchy", "Dim")))
+                .On(new MdxAxis("ROWS").With(new MdxMember("Dim Hierarchy", "Dim")))
                 .From(new MdxCube("Cube1"))
                 .From(new MdxCube("Cube2"))
                 .From(new MdxCube("Cube3"))
@@ -66,47 +65,6 @@ namespace BalticAmadeus.FluentMdx.Tests
             
             //ASSERT
             Assert.That(query.ToString(), Is.EqualTo(expectedQueryString));
-        }
-
-        [Test]
-        public void CreateQuery_WithNoAxes_ThrowsException()
-        {
-            //ARRANGE
-            //ACT
-            var query = new MdxQuery()
-                .From(new MdxCube("Cube"))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dim Hierarchy", "Dim", "Dim Key"))));
-            
-
-            //ASSERT
-            Assert.Throws<ArgumentException>(() => { query.ToString(); }, "There are no axes in query!");
-        }
-
-        [Test]
-        public void CreateQuery_WithNoAxisParameters_ThrowsException()
-        {
-            //ARRANGE
-            //ACT
-            var query = new MdxQuery()
-                .On(new MdxAxis("ROWS"))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dim Hierarchy", "Dim", "Dim Key"))));
-            
-            //ASSERT
-            Assert.Throws<ArgumentException>(() => { query.ToString(); }, "There are no axis parameters in axis!");
-        }
-
-        [Test]
-        public void CreateQuery_WithNoCubes_ThrowsException()
-        {
-            //ARRANGE
-            //ACT
-            var query = new MdxQuery()
-                .On(new MdxAxis("ROWS").With(new MdxAxisParameter("Dim Hierarchy", "Dim").AppendNames()))
-                .Where(new MdxSetTuple().With(new MdxMemberSet().With(new MdxRangeMember("1", "4", "Dim Hierarchy", "Dim", "Dim Key"))));
-            
-
-            //ASSERT
-            Assert.Throws<ArgumentException>(() => { query.ToString(); }, "There are no cubes in query!");
         }
     }
 }

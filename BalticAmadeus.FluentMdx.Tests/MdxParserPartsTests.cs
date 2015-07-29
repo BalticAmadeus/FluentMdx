@@ -106,11 +106,11 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseAxisParameter(list.GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseMember(list.GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
-            Assert.That(expression, Is.InstanceOf<MdxAxisParameter>());
+            Assert.That(expression, Is.InstanceOf<MdxMember>());
             Assert.That(expression.GetStringExpression(), Is.EqualTo("[Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION"));
         }
 

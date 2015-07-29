@@ -10,7 +10,7 @@ namespace BalticAmadeus.FluentMdx
         }
 
         internal MdxMember(IList<string> identifiers, IList<MdxFunction> appliedFunctions) 
-            : base(identifiers, appliedFunctions)
+            : base(new List<string>(identifiers), appliedFunctions)
         {
         }
     }

@@ -67,6 +67,22 @@ namespace BalticAmadeus.FluentMdx.Tests
         }
 
         [Test]
+        public void ParseQuery_WithNoAxisParameters_ReturnsParsedQuery()
+        {
+            //ARRANGE   
+            const string queryString = "SELECT " +
+                                       "NON EMPTY {  } ON COLUMNS " +
+                                       "FROM [Cube]";
+
+            //ACT
+            var query = _parserSut.ParseQuery(queryString);
+
+            //ASSERT
+            Assert.That(query, Is.Not.Null);
+            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+        }
+
+        [Test]
         public void ParserQuery_WithMultipleAxes_ReturnsParsedQuery()
         {
             //ARRANGE   
@@ -209,6 +225,40 @@ namespace BalticAmadeus.FluentMdx.Tests
                                        "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
                                        "FROM [Cube] " +
                                        "WHERE { ( { ( " +
+                                       "{ [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1], [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[2] }, " +
+                                       "{ [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[1], [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[2] } " +
+                                       ") } ) }";
+
+            //ACT
+            var query = _parserSut.ParseQuery(queryString);
+
+            //ASSERT
+            Assert.That(query, Is.Not.Null);
+            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseQuery_WithInnerQuery_ReturnsParsedQuery()
+        {
+            //ARRANGE   
+            const string queryString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM ( " +
+                                           "SELECT " +
+                                           "NON EMPTY { [Dim Hierarchy].[Dim].&[1], [Dim Hierarchy].[Dim].&[2] } ON COLUMNS " +
+                                           "FROM [Cube] " +
+                                       ") WHERE ( " +
+                                       "{ [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1], [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[2] }, " +
+                                       "{ [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[1], [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[2] } " +
+                                       ")";
+
+            const string expectedString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM ( " +
+                                           "SELECT " +
+                                           "NON EMPTY { [Dim Hierarchy].[Dim].&[1], [Dim Hierarchy].[Dim].&[2] } ON COLUMNS " +
+                                           "FROM [Cube] " +
+                                       ") WHERE { ( { ( " +
                                        "{ [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1], [Dim1 Hierarchy].[Dim1].[Dim1 Key].&[2] }, " +
                                        "{ [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[1], [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[2] } " +
                                        ") } ) }";

@@ -6,24 +6,26 @@ namespace BalticAmadeus.FluentMdx
 {
     public class MdxQuery : IMdxExpression
     {
+        private MdxQuery _innerQuery;
         private readonly IList<MdxCube> _cubes;
         private readonly IList<MdxAxis> _axes;
         private readonly IList<MdxTuple> _whereClauseTuples;
 
-        public MdxQuery() : this(new List<MdxAxis>(), new List<MdxCube>()) { }
-
-        internal MdxQuery(IList<MdxAxis> axes, IList<MdxCube> cubes) : this(axes, cubes, new List<MdxTuple>()) { }
-
-        internal MdxQuery(IList<MdxAxis> axes, IList<MdxCube> cubes, IList<MdxTuple> whereClauseTuples)
+        public MdxQuery()
         {
-            _axes = axes;
-            _cubes = cubes;
-            _whereClauseTuples = whereClauseTuples;
+            _axes = new List<MdxAxis>();
+            _cubes = new List<MdxCube>();
+            _whereClauseTuples = new List<MdxTuple>();            
         }
 
         public IEnumerable<MdxCube> Cubes
         {
             get { return _cubes; }
+        }
+
+        public MdxQuery InnerQuery
+        {
+            get { return _innerQuery; }
         }
 
         public IEnumerable<MdxAxis> Axes
@@ -47,10 +49,19 @@ namespace BalticAmadeus.FluentMdx
 
         public MdxQuery From(MdxCube cube)
         {
-            if (cube == null)
-                throw new ArgumentNullException("cube");
+            if (_innerQuery != null)
+                throw new InvalidOperationException("Cannot apply selection from OLAP Cube, when there is inner query applied!");
 
             _cubes.Add(cube);
+            return this;
+        }
+
+        public MdxQuery From(MdxQuery innerQuery)
+        {
+            if (_cubes.Any())
+                throw new InvalidOperationException("Cannot apply selection inner query, when there is OLAP Cube applied!");
+
+            _innerQuery = innerQuery;
             return this;
         }
 
@@ -62,19 +73,27 @@ namespace BalticAmadeus.FluentMdx
 
         public string GetStringExpression()
         {
-            if (!Axes.Any())
-                throw new ArgumentException("There are no axes in query!");
-            if (!Cubes.Any())
-                throw new ArgumentException("There are no cubes in query!");
+            if (_innerQuery == null)
+            {
+                if (!WhereClauseTuples.Any())
+                    return string.Format(@"SELECT {0} FROM {1}",
+                        string.Join(", ", Axes),
+                        string.Join(", ", Cubes));
+
+                return string.Format(@"SELECT {0} FROM {1} WHERE {{ ( {2} ) }}",
+                    string.Join(", ", Axes),
+                    string.Join(", ", Cubes),
+                    string.Join(", ", WhereClauseTuples));
+            }
 
             if (!WhereClauseTuples.Any())
-                return string.Format(@"SELECT {0} FROM {1}",
+                return string.Format(@"SELECT {0} FROM ( {1} )",
                     string.Join(", ", Axes),
-                    string.Join(", ", Cubes));
+                    InnerQuery);
 
-            return string.Format(@"SELECT {0} FROM {1} WHERE {{ ( {2} ) }}",
+            return string.Format(@"SELECT {0} FROM ( {1} ) WHERE {{ ( {2} ) }}",
                 string.Join(", ", Axes),
-                string.Join(", ", Cubes),
+                InnerQuery,
                 string.Join(", ", WhereClauseTuples));
         }
 

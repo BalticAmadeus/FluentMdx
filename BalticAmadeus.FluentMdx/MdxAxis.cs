@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,14 +6,14 @@ namespace BalticAmadeus.FluentMdx
     public class MdxAxis : IMdxExpression
     {
         private readonly string _title;
-        private readonly IList<MdxAxisParameter> _parameters;
-        private readonly IList<string> _properties; 
+        private readonly IList<MdxMember> _axisParameters;
+        private readonly IList<string> _properties;
 
-        public MdxAxis(string title) : this(title, new List<MdxAxisParameter>(), new List<string>()) { }
+        public MdxAxis(string title) : this(title, new List<MdxMember>(), new List<string>()) { }
 
-        internal MdxAxis(string title, IList<MdxAxisParameter> parameters, IList<string> properties)
+        internal MdxAxis(string title, IList<MdxMember> axisParameters, IList<string> properties)
         {
-            _parameters = parameters;
+            _axisParameters = axisParameters;
             _properties = properties;
             _title = title;
         }
@@ -24,9 +23,9 @@ namespace BalticAmadeus.FluentMdx
             get { return _title; }
         }
 
-        public IEnumerable<MdxAxisParameter> Parameters
+        public IEnumerable<MdxMember> AxisParameters
         {
-            get { return _parameters; }
+            get { return _axisParameters; }
         }
 
         public IEnumerable<string> Properties
@@ -36,16 +35,13 @@ namespace BalticAmadeus.FluentMdx
 
         public string GetStringExpression()
         {
-            if (!Parameters.Any())
-                throw new ArgumentException("There are no axis parameters in axis!");
-
             if (!Properties.Any())
                 return string.Format(@"NON EMPTY {{ {0} }} ON {1}",
-                    string.Join(", ", Parameters),
+                    string.Join(", ", AxisParameters),
                     Title);
 
             return string.Format(@"NON EMPTY {{ {0} }} DIMENSION PROPERTIES {1} ON {2}",
-                string.Join(", ", Parameters),
+                string.Join(", ", AxisParameters),
                 string.Join(", ", Properties),
                 Title);
         }
@@ -60,9 +56,9 @@ namespace BalticAmadeus.FluentMdx
             return Title.GetHashCode();
         }
 
-        public MdxAxis With(MdxAxisParameter parameter)
+        public MdxAxis With(MdxMember parameter)
         {
-            _parameters.Add(parameter);
+            _axisParameters.Add(parameter);
             return this;
         }
 

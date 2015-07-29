@@ -5,7 +5,7 @@ namespace BalticAmadeus.FluentMdx
     public class MdxCube : MdxIdentifier
     {
         public MdxCube(params string[] titles) 
-            : this((IList<string>) titles)
+            : this(new List<string>(titles))
         {
         }
 

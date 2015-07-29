@@ -66,44 +66,56 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.Select))
                 return false;
 
-            var queryAxes = new List<MdxAxis>();
+            var query = new MdxQuery();
+
             do
             {
                 IMdxExpression childExpression;
                 if (!TryParseAxis(enumerator, out childExpression))
                     return false;
 
-                queryAxes.Add((MdxAxis)childExpression);
+                query.On((MdxAxis)childExpression);
             } while (IsNextTokenValid(enumerator, TokenType.Comma));
 
             if (!IsNextTokenValid(enumerator, TokenType.From))
                 return false;
 
-            var queryCubes = new List<MdxCube>();
-            do
+            if (IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
             {
-                IMdxExpression childExpression;
-                if (!TryParseCube(enumerator, out childExpression))
+                IMdxExpression innerQuery;
+                if (!TryParseQuery(enumerator, out innerQuery))
                     return false;
 
-                queryCubes.Add((MdxCube)childExpression);
-            } while (IsNextTokenValid(enumerator, TokenType.Comma));
+                query.From((MdxQuery) innerQuery);
+
+                if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
+                    return false;
+            }
+            else
+            {
+                do
+                {
+                    IMdxExpression childExpression;
+                    if (!TryParseCube(enumerator, out childExpression))
+                        return false;
+
+                    query.From((MdxCube)childExpression);
+                } while (IsNextTokenValid(enumerator, TokenType.Comma));
+            }
 
             if (!IsNextTokenValid(enumerator, TokenType.Where))
             {
-                expression = new MdxQuery(queryAxes, queryCubes);
+                expression = query;
                 return true;
             }
-
-            var whereClauses = new List<MdxTuple>();
 
             IMdxExpression member;
             if (TryParseMember(enumerator, out member))
             {
                 var memberTuple = new MdxMemberTuple().With((MdxMember) member);
-                whereClauses.Add(memberTuple);
+                query.Where(memberTuple);
 
-                expression = new MdxQuery(queryAxes, queryCubes, whereClauses);
+                expression = query;
                 return true;
             }
 
@@ -111,18 +123,18 @@ namespace BalticAmadeus.FluentMdx
             if (TryParseSet(enumerator, out set))
             {
                 var setTuple = new MdxSetTuple().With((MdxSet)set);
-                whereClauses.Add(setTuple);
+                query.Where(setTuple);
 
-                expression = new MdxQuery(queryAxes, queryCubes, whereClauses);
+                expression = query;
                 return true;
             }
 
             IMdxExpression tuple;
             if (TryParseTuple(enumerator, out tuple))
             {
-                whereClauses.Add((MdxTuple)tuple);
+                query.Where((MdxTuple)tuple);
 
-                expression = new MdxQuery(queryAxes, queryCubes, whereClauses);
+                expression = query;
                 return true;
             }
            
@@ -322,15 +334,15 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.LeftCurlyBracket))
                 return false;
 
-            var axisParameters = new List<MdxAxisParameter>();
-            do
+            var axisParameters = new List<MdxMember>();
+            IMdxExpression axisParameter;
+            while (TryParseMember(enumerator, out axisParameter))
             {
-                IMdxExpression childExpression;
-                if (!TryParseAxisParameter(enumerator, out childExpression))
-                    return false;
+                axisParameters.Add((MdxMember)axisParameter);
 
-                axisParameters.Add((MdxAxisParameter)childExpression);
-            } while (IsNextTokenValid(enumerator, TokenType.Comma));
+                if (!IsNextTokenValid(enumerator, TokenType.Comma))
+                    break;
+            }
 
             if (!IsNextTokenValid(enumerator, TokenType.RightCurlyBracket))
                 return false;
@@ -370,38 +382,6 @@ namespace BalticAmadeus.FluentMdx
             string axisName = enumerator.Current.Value;
 
             expression = new MdxAxis(axisName, axisParameters, axisProperties);
-            return true;
-        }
-
-        internal static bool TryParseAxisParameter(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
-        {
-            expression = null;
-
-            var identifiers = new List<string>();
-            var appliedFunctions = new List<MdxFunction>();
-            do
-            {
-                IMdxExpression function;
-                if (TryParseFunction(enumerator, out function))
-                {
-                    appliedFunctions.Add((MdxFunction)function);
-                    continue;
-                }
-
-                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
-                    return false;
-
-                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
-                    return false;
-
-                identifiers.Add(enumerator.Current.Value);
-
-                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
-                    return false;
-
-            } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
-
-            expression = new MdxAxisParameter(identifiers, appliedFunctions);
             return true;
         }
 

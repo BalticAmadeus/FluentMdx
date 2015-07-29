@@ -46,7 +46,6 @@
     <Compile Include="Lexer\TokenDefinition.cs" />
     <Compile Include="Lexer\TokenType.cs" />
     <Compile Include="MdxAxis.cs" />
-    <Compile Include="MdxAxisParameter.cs" />
     <Compile Include="MdxCube.cs" />
     <Compile Include="MdxFunction.cs" />
     <Compile Include="MdxIdentifier.cs" />
