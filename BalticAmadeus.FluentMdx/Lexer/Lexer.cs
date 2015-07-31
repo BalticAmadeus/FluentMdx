@@ -30,13 +30,17 @@ namespace BalticAmadeus.FluentMdx.Lexer
                 new TokenDefinition(TokenType.RangeSeparator, "\\:"),
                 new TokenDefinition(TokenType.ValueSeparator, "\\.\\&"),
                 new TokenDefinition(TokenType.IdentifierSeparator, "\\."),
-                
+
                 new TokenDefinition(TokenType.Properties, "PROPERTIES"),
                 new TokenDefinition(TokenType.Dimension, "DIMENSION"),
                 new TokenDefinition(TokenType.AxisName,
                     "(COLUMNS)|(ROWS)|(PAGES)|(CHAPTERS)|(SECTIONS)|(AXIS\\([0-9]+\\))"),
+                new TokenDefinition(TokenType.DateExpression,
+                    "[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}T[0-9]{2}\\:[0-9]{2}\\:[0-9]{2}"),
+                new TokenDefinition(TokenType.NumberExpression, "\\-?[0-9]+(\\.[0-9]+)?"),
+                new TokenDefinition(TokenType.OperationExpression, "AND|OR|<=|>=|\\+|\\-|\\*|\\\\|<|=|>"),
                 new TokenDefinition(TokenType.IdentifierExpression,
-                    "[a-zA-Z0-9 \\/\\\\\\-\\:]*[a-zA-Z0-9\\/\\\\\\-\\:]"),
+                    "[a-zA-Z0-9 \\/\\\\\\-\\:\\']*[a-zA-Z0-9\\/\\\\\\-\\:\\']"),
             };
         }
 
@@ -63,7 +67,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
 
                 TokenDefinition matchedDefinition = null;
                 int matchLength = 0;
-
+                
                 foreach (var rule in _tokenDefinitions)
                 {
                     var match = rule.Pattern.Match(source, currentIndex);
@@ -81,9 +85,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
                 
                 var value = source.Substring(currentIndex, matchLength);
 
-                yield return
-                    new Token(matchedDefinition.Type, value);
-
+                yield return new Token(matchedDefinition.Type, value);
+                
                 endOfLineRegex.Match(value);
                 currentIndex += matchLength;
             }

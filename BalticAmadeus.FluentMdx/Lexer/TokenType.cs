@@ -23,6 +23,9 @@ namespace BalticAmadeus.FluentMdx.Lexer
         IdentifierSeparator,
         DimensionProperty,
         Dimension,
-        Properties
+        Properties,
+        NumberExpression,
+        OperationExpression,
+        DateExpression
     }
 }

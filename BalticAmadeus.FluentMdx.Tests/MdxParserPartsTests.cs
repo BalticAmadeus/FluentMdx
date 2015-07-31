@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using BalticAmadeus.FluentMdx.EnumerableExtensions;
-using BalticAmadeus.FluentMdx.Lexer;
 using NUnit.Framework;
 
 namespace BalticAmadeus.FluentMdx.Tests
@@ -20,205 +18,109 @@ namespace BalticAmadeus.FluentMdx.Tests
         [Test]
         public void ParseAxisParameter_WithSubsequentIdentifiers_SucceedsReturnsAxisParameter()
         {
-            //ARRANGE
-            var list = new List<Token>
-            {
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Bbb"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Ccc"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.IdentifierExpression, "FUNCTION"),
-                new Token(TokenType.LeftRoundBracket, "("),
-                new Token(TokenType.IdentifierExpression, "1"),
-                new Token(TokenType.Comma, ","),
-                new Token(TokenType.IdentifierExpression, "2"),
-                new Token(TokenType.RightRoundBracket, ")"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.IdentifierExpression, "FUNCTION"),
-            };
+            //ARRANGE   
+            const string queryString = "[Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION";
+
+            const string expectedString = "[Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION";
 
             //ACT
             IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseMember(list.GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxMember>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo("[Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION"));
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
-        public void ParseFunction_WithSubsequentFunctions_SuccedsAndReturnsFunction()
+        public void ParseNavigationFunction_WithSubsequentFunctions_SuccedsAndReturnsFunction()
         {
-            //ARRANGE
-            var list = new List<Token>
-            {
-                new Token(TokenType.IdentifierExpression, "FUNCTION"),
-                new Token(TokenType.LeftRoundBracket, "("),
-                new Token(TokenType.IdentifierExpression, "1"),
-                new Token(TokenType.Comma, ","),
-                new Token(TokenType.IdentifierExpression, "2"),
-                new Token(TokenType.RightRoundBracket, ")")
-            };
+            //ARRANGE   
+            const string queryString = "FUNCTION(1, 2)";
+
+            const string expectedString = "FUNCTION(1, 2)";
 
             //ACT
             IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseFunction(list.GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseNavigationFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxNavigationFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo("FUNCTION(1, 2)"));
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
         public void ParseAxis_WithParameters_SecceedsAndReturnsAxis()
         {
-            //ARRANGE
-            var list = new List<Token>
-            {
-                new Token(TokenType.Non, "NON"),
-                new Token(TokenType.Empty, "EMPTY"),
-                new Token(TokenType.LeftCurlyBracket, "{"),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Bbb"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Ccc"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.IdentifierExpression, "FUNCTION"),
-                new Token(TokenType.LeftRoundBracket, "("),
-                new Token(TokenType.IdentifierExpression, "1"),
-                new Token(TokenType.Comma, ","),
-                new Token(TokenType.IdentifierExpression, "2"),
-                new Token(TokenType.RightRoundBracket, ")"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.IdentifierExpression, "FUNCTION"),
-                new Token(TokenType.Comma, ","),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.RightCurlyBracket, "}"),
-                new Token(TokenType.On, "ON"),
-                new Token(TokenType.AxisName, "COLUMNS"),
-            };
+            //ARRANGE   
+            const string queryString = "NON EMPTY { [Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION, [Aaa] } ON COLUMNS";
+
+            const string expectedString = "NON EMPTY { [Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION, [Aaa] } ON COLUMNS";
 
             //ACT
             IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseAxis(list.GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseAxis(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxAxis>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo("NON EMPTY { [Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION, [Aaa] } ON COLUMNS"));
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
         public void ParseAxis_WithParameterAndDimensionProperties_SecceedsAndReturnsAxis()
         {
-            //ARRANGE
-            var list = new List<Token>
-            {
-                new Token(TokenType.Non, "NON"),
-                new Token(TokenType.Empty, "EMPTY"),
-                new Token(TokenType.LeftCurlyBracket, "{"),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.RightCurlyBracket, "}"),
-                new Token(TokenType.Dimension, "DIMENSION"),
-                new Token(TokenType.Properties, "PROPERTIES"),
-                new Token(TokenType.DimensionProperty, "CATALOG_NAME"),
-                new Token(TokenType.Comma, ","),
-                new Token(TokenType.DimensionProperty, "CUSTOM_ROLLUP"),
-                new Token(TokenType.On, "ON"),
-                new Token(TokenType.AxisName, "COLUMNS"),
-            };
+            //ARRANGE   
+            const string queryString = "NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON COLUMNS";
+
+            const string expectedString = "NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON COLUMNS";
 
             //ACT
             IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseAxis(list.GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseAxis(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxAxis>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo("NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON COLUMNS"));
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
         public void ParseCube_WithParameters_SecceedsAndReturnsCube()
         {
-            //ARRANGE
-            var list = new List<Token>
-            {
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Bbb"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Ccc"),
-                new Token(TokenType.RightSquareBracket, "]")
-            };
+            //ARRANGE   
+            const string queryString = "[Aaa].[Bbb].[Ccc]";
+
+            const string expectedString = "[Aaa].[Bbb].[Ccc]";
 
             //ACT
             IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseCube(list.GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseCube(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxCube>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo("[Aaa].[Bbb].[Ccc]"));
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
         public void ParseMember_WithSubsequentIdentifiersAndValue_SuceeedsAndReturnsValueMember()
         {
-            //ARRANGE
-            var list = new List<Token>
-            {
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Bbb"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Ccc"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.ValueSeparator, ".&"),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "1"),
-                new Token(TokenType.RightSquareBracket, "]")
-            };
+            //ARRANGE   
+            const string queryString = "[Aaa].[Bbb].[Ccc].&[1]";
+
+            const string expectedString = "[Aaa].[Bbb].[Ccc].&[1]";
 
             //ACT
             IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseMember(list.GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxMember>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo("[Aaa].[Bbb].[Ccc].&[1]"));
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -236,6 +138,132 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxMember>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseFunction_WithNoParameters_SuceeedsAndReturnsFunction()
+        {
+            //ARRANGE
+            const string queryString = "MYFUNCTION()";
+
+            const string expectedString = "MYFUNCTION()";
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseFunction_WithSingleFunctionParameter_SuceeedsAndReturnsFunction()
+        {
+            //ARRANGE
+            const string queryString = "MYFUNCTION(MYOTHERFUNCTION())";
+
+            const string expectedString = "MYFUNCTION(MYOTHERFUNCTION())";
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseFunction_WithSingleSetParameter_SuceeedsAndReturnsFunction()
+        {
+            //ARRANGE
+            const string queryString = "MYFUNCTION(())";
+
+            const string expectedString = "MYFUNCTION(( ))";
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseFunction_WithSingleTupleParameter_SuceeedsAndReturnsFunction()
+        {
+            //ARRANGE
+            const string queryString = "MYFUNCTION({ })";
+
+            const string expectedString = "MYFUNCTION({ })";
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseFunction_WithSingleMemberParameter_SuceeedsAndReturnsFunction()
+        {
+            //ARRANGE
+            const string queryString = "MYFUNCTION([Id])";
+
+            const string expectedString = "MYFUNCTION([Id])";
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseFunction_WithSingleExpressionParameter_SuceeedsAndReturnsFunction()
+        {
+            //ARRANGE
+            const string queryString = "MYFUNCTION([Id] > 1)";
+
+            const string expectedString = "MYFUNCTION([Id] > 1)";
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseFunction_WithSingleNumberAndTextExpressionParameter_SuceeedsAndReturnsFunction()
+        {
+            //ARRANGE
+            const string queryString = "MYFUNCTION.Func(1 + 'asd')";
+
+            const string expectedString = "MYFUNCTION.Func(1 + 'asd')";
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxFunction>());
             Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
         }
     }

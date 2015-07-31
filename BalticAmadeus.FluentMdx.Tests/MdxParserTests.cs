@@ -144,6 +144,28 @@ namespace BalticAmadeus.FluentMdx.Tests
         }
 
         [Test]
+        public void ParseQuery_WithSingleWhereRangeMemberDate_ReturnsParsedQuery()
+        {
+            //ARRANGE   
+            const string queryString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM [Cube] " +
+                                       "WHERE [Dim Hierarchy].[Date].[Date].&[2010-10-10T00:00:00]:[Dim Hierarchy].[Date].[Date].&[2011-10-10T00:00:00]";
+
+            const string expectedString = "SELECT " +
+                                       "NON EMPTY { [Measures].[Measure] } ON COLUMNS " +
+                                       "FROM [Cube] " +
+                                       "WHERE { ( { [Dim Hierarchy].[Date].[Date].&[2010-10-10T00:00:00]:[Dim Hierarchy].[Date].[Date].&[2011-10-10T00:00:00] } ) }";
+
+            //ACT
+            var query = _parserSut.ParseQuery(queryString);
+
+            //ASSERT
+            Assert.That(query, Is.Not.Null);
+            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
         public void ParseQuery_WithSingleWhereTuple_ReturnsParsedQuery()
         {
             //ARRANGE   
