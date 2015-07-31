@@ -3,14 +3,14 @@ using System.Linq;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxFunction : IMdxExpression
+    public class MdxNavigationFunction : IMdxExpression
     {
         private readonly string _title;
         private readonly IList<string> _functionParameters;
 
-        public MdxFunction(string title) : this(title, new List<string>()) { }
+        public MdxNavigationFunction(string title) : this(title, new List<string>()) { }
 
-        internal MdxFunction(string title, IList<string> functionParameters)
+        internal MdxNavigationFunction(string title, IList<string> functionParameters)
         {
             _title = title;
             _functionParameters = functionParameters;
@@ -26,7 +26,7 @@ namespace BalticAmadeus.FluentMdx
             get { return _functionParameters; }
         }
 
-        public MdxFunction WithParameters(params string[] parameters)
+        public MdxNavigationFunction WithParameters(params string[] parameters)
         {
             foreach (var parameter in parameters)
                 _functionParameters.Add(parameter);

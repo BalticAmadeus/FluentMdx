@@ -71,7 +71,7 @@ namespace BalticAmadeus.FluentMdx.Tests
         {
             //ARRANGE   
             const string queryString = "SELECT " +
-                                       "NON EMPTY {  } ON COLUMNS " +
+                                       "NON EMPTY { } ON COLUMNS " +
                                        "FROM [Cube]";
 
             //ACT

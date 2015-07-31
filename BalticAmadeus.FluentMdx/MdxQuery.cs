@@ -49,8 +49,7 @@ namespace BalticAmadeus.FluentMdx
 
         public MdxQuery From(MdxCube cube)
         {
-            if (_innerQuery != null)
-                throw new InvalidOperationException("Cannot apply selection from OLAP Cube, when there is inner query applied!");
+            _innerQuery = null;
 
             _cubes.Add(cube);
             return this;
@@ -58,9 +57,8 @@ namespace BalticAmadeus.FluentMdx
 
         public MdxQuery From(MdxQuery innerQuery)
         {
-            if (_cubes.Any())
-                throw new InvalidOperationException("Cannot apply selection inner query, when there is OLAP Cube applied!");
-
+            _cubes.Clear();
+            
             _innerQuery = innerQuery;
             return this;
         }

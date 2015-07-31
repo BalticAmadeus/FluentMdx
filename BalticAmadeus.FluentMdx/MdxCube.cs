@@ -10,7 +10,7 @@ namespace BalticAmadeus.FluentMdx
         }
 
         internal MdxCube(IList<string> identifiers) 
-            : base(identifiers, new List<MdxFunction>())
+            : base(identifiers, new List<MdxNavigationFunction>())
         {
         }
         

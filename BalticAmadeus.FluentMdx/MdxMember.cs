@@ -5,11 +5,11 @@ namespace BalticAmadeus.FluentMdx
     public class MdxMember : MdxIdentifier
     {
         public MdxMember(params string[] titles) 
-            : this(titles, new List<MdxFunction>())
+            : this(titles, new List<MdxNavigationFunction>())
         {
         }
 
-        internal MdxMember(IList<string> identifiers, IList<MdxFunction> appliedFunctions) 
+        internal MdxMember(IList<string> identifiers, IList<MdxNavigationFunction> appliedFunctions) 
             : base(new List<string>(identifiers), appliedFunctions)
         {
         }

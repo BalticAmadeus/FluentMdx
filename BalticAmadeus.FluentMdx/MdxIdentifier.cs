@@ -6,12 +6,12 @@ namespace BalticAmadeus.FluentMdx
     public class MdxIdentifier : IMdxExpression
     {
         private readonly IList<string> _identifiers;
-        private readonly IList<MdxFunction> _appliedFunctions;
+        private readonly IList<MdxNavigationFunction> _appliedFunctions;
 
         public MdxIdentifier(params string[] titles) 
-            : this(new List<string>(titles), new List<MdxFunction>()) { }
+            : this(new List<string>(titles), new List<MdxNavigationFunction>()) { }
 
-        internal MdxIdentifier(IList<string> identifiers, IList<MdxFunction> appliedFunctions)
+        internal MdxIdentifier(IList<string> identifiers, IList<MdxNavigationFunction> appliedFunctions)
         {
             _identifiers = identifiers;
             _appliedFunctions = appliedFunctions;
@@ -27,12 +27,12 @@ namespace BalticAmadeus.FluentMdx
             get { return _identifiers; }
         }
 
-        public IEnumerable<MdxFunction> AppliedFunctions
+        public IEnumerable<MdxNavigationFunction> AppliedFunctions
         {
             get { return _appliedFunctions; }
         }
 
-        internal IList<MdxFunction> AppliedFunctionsInternal
+        internal IList<MdxNavigationFunction> AppliedFunctionsInternal
         {
             get { return _appliedFunctions; }
         }
@@ -68,7 +68,7 @@ namespace BalticAmadeus.FluentMdx
             return identifier;
         }
 
-        public static T ApplyFunction<T>(this T identifier, MdxFunction function) where T : MdxIdentifier
+        public static T ApplyFunction<T>(this T identifier, MdxNavigationFunction function) where T : MdxIdentifier
         {
             identifier.AppliedFunctionsInternal.Add(function);
             return identifier;

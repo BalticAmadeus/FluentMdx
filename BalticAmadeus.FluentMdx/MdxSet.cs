@@ -1,8 +1,11 @@
 namespace BalticAmadeus.FluentMdx
 {
-    public abstract class MdxSet : IMdxExpression
+    public class MdxSet : IMdxExpression
     {
-        public abstract string GetStringExpression();
+        public virtual string GetStringExpression()
+        {
+            return "( )";
+        }
 
         public override string ToString()
         {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace BalticAmadeus.FluentMdx
 {
@@ -6,10 +7,10 @@ namespace BalticAmadeus.FluentMdx
     {
         private readonly string _value;
 
-        public MdxValueMember(string value, params string[] titles) : this(titles, value) { }
+        public MdxValueMember(string value, params string[] titles) : this(titles, value, new List<MdxNavigationFunction>()) { }
 
-        internal MdxValueMember(IList<string> identifiers, string value)
-            : base(new List<string>(identifiers), new List<MdxFunction>())
+        internal MdxValueMember(IList<string> identifiers, string value, IList<MdxNavigationFunction> appliedFunctions)
+            : base(new List<string>(identifiers), appliedFunctions)
         {
             _value = value;
         }
@@ -21,7 +22,10 @@ namespace BalticAmadeus.FluentMdx
 
         public override string GetStringExpression()
         {
-            return string.Format("[{0}].&[{1}]", string.Join("].[", Identifiers), Value);
+            if (!AppliedFunctions.Any())
+                return string.Format("[{0}].&[{1}]", string.Join("].[", Identifiers), Value);
+
+            return string.Format("[{0}].&[{1}].{2}", string.Join("].[", Identifiers), Value, string.Join(".", AppliedFunctions));
         }
     }
 }

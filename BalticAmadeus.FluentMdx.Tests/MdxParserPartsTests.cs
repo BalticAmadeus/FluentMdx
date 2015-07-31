@@ -9,71 +9,12 @@ namespace BalticAmadeus.FluentMdx.Tests
     [TestFixture, ExcludeFromCodeCoverage]
     public class MdxParserPartsTests
     {
-        [Test]
-        public void ParseIdentifier_WithSubsequentIdentifiers_SucceedsReturnsIdentifier()
+        private Lexer.Lexer _lexer;
+
+        [TestFixtureSetUp]
+        public void TestFixtureSetUp()
         {
-            //ARRANGE
-            var list = new List<Token>
-            {
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Bbb"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Ccc"),
-                new Token(TokenType.RightSquareBracket, "]")
-            };
-
-            //ACT
-            IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseIdentifier(list.GetTwoWayEnumerator(), out expression);
-
-            //ASSERT
-            Assert.That(isSucceeded, Is.True);
-            Assert.That(expression, Is.InstanceOf<MdxIdentifier>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo("[Aaa].[Bbb].[Ccc]"));
-        }
-
-        [Test]
-        public void ParseIdentifier_WithSubsequentIdentifiersAndFunctions_SucceedsReturnsIdentifier()
-        {
-            //ARRANGE
-            var list = new List<Token>
-            {
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Bbb"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Ccc"),
-                new Token(TokenType.RightSquareBracket, "]"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.IdentifierExpression, "FUNCTION"),
-                new Token(TokenType.LeftRoundBracket, "("),
-                new Token(TokenType.IdentifierExpression, "1"),
-                new Token(TokenType.Comma, ","),
-                new Token(TokenType.IdentifierExpression, "2"),
-                new Token(TokenType.RightRoundBracket, ")"),
-                new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.IdentifierExpression, "FUNCTION"),
-            };
-
-            //ACT
-            IMdxExpression expression;
-            bool isSucceeded = MdxParser.TryParseIdentifier(list.GetTwoWayEnumerator(), out expression);
-
-            //ASSERT
-            Assert.That(isSucceeded, Is.True);
-            Assert.That(expression, Is.InstanceOf<MdxIdentifier>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo("[Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION"));
+            _lexer = new Lexer.Lexer();
         }
 
         [Test]
@@ -134,7 +75,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
-            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression, Is.InstanceOf<MdxNavigationFunction>());
             Assert.That(expression.GetStringExpression(), Is.EqualTo("FUNCTION(1, 2)"));
         }
 
@@ -278,6 +219,24 @@ namespace BalticAmadeus.FluentMdx.Tests
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxMember>());
             Assert.That(expression.GetStringExpression(), Is.EqualTo("[Aaa].[Bbb].[Ccc].&[1]"));
+        }
+
+        [Test]
+        public void ParseMember_WithFunctionAfterValueMember_SuceeedsAndReturnsValueMemberWithFunction()
+        {
+            //ARRANGE   
+            const string queryString = "[Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1].AllMembers";
+
+            const string expectedString = "[Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1].AllMembers";
+
+            //ACT
+            IMdxExpression expression;
+            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxMember>());
+            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
         }
     }
 }
