@@ -17,7 +17,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             var query = Mdx.Query()
-                .On(Mdx.Axis().Titled("COLUMNS").With(Mdx.Tuple().With(Mdx.Member().Titled("Dim Hierarchy").Titled("Dim"))).AsNonEmpty())
+                .On(Mdx.Axis().Titled("COLUMNS").With(Mdx.Tuple().With(Mdx.Member().Titled("Dim Hierarchy").Titled("Dim"))).NonEmpty())
                 .From(Mdx.Cube().Titled("Cube"))
                 .Where(Mdx.Tuple().With(Mdx.Set().With(Mdx.Member().Titled("Dim Hierarchy", "Dim", "Dim Key").WithValue("1"))));
 
@@ -30,15 +30,15 @@ namespace BalticAmadeus.FluentMdx.Tests
         {
             //ARRANGE
             const string expectedQueryString = "SELECT " +
-                                               "NON EMPTY { [Dim1 Hierarchy].[Dim1] } ON COLUMNS, " +
-                                               "NON EMPTY { [Dim2 Hierarchy].[Dim2] } ON ROWS " +
+                                               "{ [Dim1 Hierarchy].[Dim1] } ON COLUMNS, " +
+                                               "{ [Dim2 Hierarchy].[Dim2] } DIMENSION PROPERTIES CHILDREN_CARDINALITY ON ROWS " +
                                                "FROM [Cube] " +
                                                "WHERE { ( { ( [Dim2 Hierarchy].[Dim2].[Dim2 Key].&[1] ) } ) }";
 
             //ACT
             var query = Mdx.Query()
-                .On(Mdx.Axis().Titled("COLUMNS").AsNonEmpty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim1 Hierarchy", "Dim1"))))
-                .On(Mdx.Axis().Titled("ROWS").AsNonEmpty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim2 Hierarchy", "Dim2"))))
+                .On(Mdx.Axis().Titled("COLUMNS").Empty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim1 Hierarchy", "Dim1"))))
+                .On(Mdx.Axis().Titled("ROWS").Empty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim2 Hierarchy", "Dim2"))).WithProperties("CHILDREN_CARDINALITY"))
                 .From(Mdx.Cube().Titled("Cube"))
                 .Where(Mdx.Tuple().With(Mdx.Set().With(Mdx.Member().Titled("Dim2 Hierarchy", "Dim2", "Dim2 Key").WithValue("1"))));
 
@@ -57,7 +57,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             var query = Mdx.Query()
-                .On(Mdx.Axis().Titled("ROWS").AsNonEmpty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim Hierarchy", "Dim"))))
+                .On(Mdx.Axis().Titled("ROWS").NonEmpty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim Hierarchy", "Dim"))))
                 .From(Mdx.Cube().Titled("Cube1"))
                 .From(Mdx.Cube().Titled("Cube2"))
                 .From(Mdx.Cube().Titled("Cube3"))

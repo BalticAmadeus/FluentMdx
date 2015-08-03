@@ -380,7 +380,7 @@ namespace BalticAmadeus.FluentMdx
                 if (!IsNextTokenValid(enumerator, TokenType.Empty))
                     return false;
 
-                axis.AsNonEmpty();
+                axis.NonEmpty();
             }
 
             MdxExpressionBase axisParameter;

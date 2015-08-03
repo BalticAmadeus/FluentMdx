@@ -292,5 +292,27 @@ namespace BalticAmadeus.FluentMdx.Tests
             Assert.That(query, Is.Not.Null);
             Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
+
+        [Test]
+        public void ParseQuery_WithFunctions_ReturnsParsedQuery()
+        {
+            //ARRANGE   
+            const string queryString = "SELECT " +
+                                       "NON EMPTY { [Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3] } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON COLUMNS, " +
+                                       "NON EMPTY { [Dim Hierarchy2].[Dim1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON ROWS " +
+                                       "FROM [Cube]";
+
+            const string expectedString = "SELECT " +
+                                          "NON EMPTY { [Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3] } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON COLUMNS, " +
+                                          "NON EMPTY { [Dim Hierarchy2].[Dim1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON ROWS " +
+                                          "FROM [Cube]";
+
+            //ACT
+            var query = _parserSut.ParseQuery(queryString);
+
+            //ASSERT
+            Assert.That(query, Is.Not.Null);
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
+        }
     }
 }

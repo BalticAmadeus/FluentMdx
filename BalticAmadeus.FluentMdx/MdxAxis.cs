@@ -52,11 +52,6 @@ namespace BalticAmadeus.FluentMdx
                     Title);
         }
 
-        public override int GetHashCode()
-        {
-            return Title.GetHashCode();
-        }
-
         public MdxAxis With(MdxTuple parameter)
         {
             AxisSlicer = parameter;
@@ -69,9 +64,15 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
-        public MdxAxis AsNonEmpty()
+        public MdxAxis NonEmpty()
         {
             IsNonEmpty = true;
+            return this;
+        }
+
+        public MdxAxis Empty()
+        {
+            IsNonEmpty = false;
             return this;
         }
 
