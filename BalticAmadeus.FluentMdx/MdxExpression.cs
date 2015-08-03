@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxExpression : IMdxExpression
+    public class MdxExpression : MdxExpressionBase
     {
         private readonly IList<string> _operations;
         private readonly IList<string> _expressions;
@@ -27,7 +27,7 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
-        public string GetStringExpression()
+        protected override string GetStringExpression()
         {
             var sb = new StringBuilder();
 
@@ -50,11 +50,6 @@ namespace BalticAmadeus.FluentMdx
             }
 
             return sb.ToString();
-        }
-
-        public override string ToString()
-        {
-            return GetStringExpression();
         }
     }
 }

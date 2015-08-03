@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxNavigationFunction : IMdxExpression
+    public class MdxNavigationFunction : MdxExpressionBase
     {
         private readonly string _title;
         private readonly IList<string> _functionParameters;
@@ -34,17 +34,12 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
-        public string GetStringExpression()
+        protected override string GetStringExpression()
         {
             if (!FunctionParameters.Any())
                 return Title;
 
             return string.Format("{0}({1})", Title, string.Join(", ", FunctionParameters));
-        }
-
-        public override string ToString()
-        {
-            return GetStringExpression();
         }
     }
 }

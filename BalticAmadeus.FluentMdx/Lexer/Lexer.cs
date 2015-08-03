@@ -40,7 +40,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
                 new TokenDefinition(TokenType.NumberExpression, "\\-?[0-9]+(\\.[0-9]+)?"),
                 new TokenDefinition(TokenType.OperationExpression, "AND|OR|<=|>=|\\+|\\-|\\*|\\\\|<|=|>"),
                 new TokenDefinition(TokenType.IdentifierExpression,
-                    "[a-zA-Z0-9 \\/\\\\\\-\\:\\']*[a-zA-Z0-9\\/\\\\\\-\\:\\']"),
+                    "[a-zA-Z0-9 \\/\\\\\\-\\:\\'\\\"]*[a-zA-Z0-9\\/\\\\\\-\\:\\'\\\"]"),
             };
         }
 

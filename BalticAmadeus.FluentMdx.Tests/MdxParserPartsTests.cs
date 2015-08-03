@@ -24,13 +24,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "[Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxMember>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -42,13 +42,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "FUNCTION(1, 2)";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseNavigationFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxNavigationFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -60,13 +60,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "NON EMPTY { [Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION, [Aaa] } ON COLUMNS";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseAxis(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxAxis>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -78,13 +78,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON COLUMNS";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseAxis(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxAxis>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -96,13 +96,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "[Aaa].[Bbb].[Ccc]";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseCube(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxCube>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -114,13 +114,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "[Aaa].[Bbb].[Ccc].&[1]";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxMember>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -132,13 +132,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "[Dim1 Hierarchy].[Dim1].[Dim1 Key].&[1].AllMembers";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxMember>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -150,13 +150,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "MYFUNCTION()";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -168,13 +168,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "MYFUNCTION(MYOTHERFUNCTION())";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -183,16 +183,16 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ARRANGE
             const string queryString = "MYFUNCTION(())";
 
-            const string expectedString = "MYFUNCTION(( ))";
+            const string expectedString = "MYFUNCTION((  ))";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -201,16 +201,16 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ARRANGE
             const string queryString = "MYFUNCTION({ })";
 
-            const string expectedString = "MYFUNCTION({ })";
+            const string expectedString = "MYFUNCTION({  })";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -222,13 +222,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "MYFUNCTION([Id])";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -240,13 +240,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "MYFUNCTION([Id] > 1)";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -258,13 +258,13 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string expectedString = "MYFUNCTION.Func(1 + 'asd')";
 
             //ACT
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
             Assert.That(expression, Is.InstanceOf<MdxFunction>());
-            Assert.That(expression.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
     }
 }

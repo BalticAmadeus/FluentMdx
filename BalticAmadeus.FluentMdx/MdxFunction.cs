@@ -2,7 +2,7 @@
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxFunction : IMdxExpression
+    public class MdxFunction : MdxExpressionBase, IMdxMember
     {
         private readonly IList<string> _titles;
         private readonly IList<MdxExpression> _parameters; 
@@ -34,17 +34,12 @@ namespace BalticAmadeus.FluentMdx
             _parameters.Add(parameter);
             return this;
         }
-        
-        public string GetStringExpression()
+
+        protected override string GetStringExpression()
         {
             return string.Format("{0}({1})", 
                 string.Join(".", Titles), 
                 string.Join(", ", Parameters));
-        }
-
-        public override string ToString()
-        {
-            return GetStringExpression();
         }
     }
 }

@@ -3,71 +3,53 @@ using System.Linq;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxAxis : IMdxExpression
+    public class MdxAxis : MdxExpressionBase
     {
-        private string _title;
-        private MdxTuple _axisParameters;
         private readonly IList<string> _properties;
-        private bool _isNonEmpty;
 
-        public MdxAxis() : this(null)
+        public MdxAxis()
         {
+            _properties = new List<string>();
+
+            AxisSlicer = null;
+            Title = null;
+            IsNonEmpty = false;
         }
 
-        public MdxAxis(string title) : this(title, null, new List<string>()) { }
-
-        internal MdxAxis(string title, MdxTuple axisParameters, IList<string> properties)
-        {
-            _axisParameters = axisParameters;
-            _properties = properties;
-            _title = title;
-            _isNonEmpty = false;
-        }
-
-        public string Title
-        {
-            get { return _title; }
-        }
-
-        public MdxTuple AxisParameters
-        {
-            get { return _axisParameters; }
-        }
+        public string Title { get; private set; }
+        public IMdxMember AxisSlicer { get; private set; }
+        public bool IsNonEmpty { get; private set; }
 
         public IEnumerable<string> Properties
         {
             get { return _properties; }
         }
 
-        public string GetStringExpression()
+
+        protected override string GetStringExpression()
         {
-            if (!_isNonEmpty)
+            if (!IsNonEmpty)
             {
                 if (!Properties.Any())
                     return string.Format(@"{0} ON {1}",
-                        AxisParameters,
+                        AxisSlicer,
                         Title);
 
                 return string.Format(@"{0} DIMENSION PROPERTIES {1} ON {2}",
-                    AxisParameters,
+                    AxisSlicer,
                     string.Join(", ", Properties),
                     Title);
             }
 
             if (!Properties.Any())
                 return string.Format(@"NON EMPTY {0} ON {1}",
-                    AxisParameters, 
+                    AxisSlicer, 
                     Title);
 
             return string.Format(@"NON EMPTY {0} DIMENSION PROPERTIES {1} ON {2}",
-                AxisParameters,
+                AxisSlicer,
                     string.Join(", ", Properties),
                     Title);
-        }
-
-        public override string ToString()
-        {
-            return GetStringExpression();
         }
 
         public override int GetHashCode()
@@ -77,19 +59,19 @@ namespace BalticAmadeus.FluentMdx
 
         public MdxAxis With(MdxTuple parameter)
         {
-            _axisParameters = parameter;
+            AxisSlicer = parameter;
             return this;
         }
 
-        public MdxAxis Named(string title)
+        public MdxAxis Titled(string title)
         {
-            _title = title;
+            Title = title;
             return this;
         }
 
-        public MdxAxis NonEmpty()
+        public MdxAxis AsNonEmpty()
         {
-            _isNonEmpty = true;
+            IsNonEmpty = true;
             return this;
         }
 

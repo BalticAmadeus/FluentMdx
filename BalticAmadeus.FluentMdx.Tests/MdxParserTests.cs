@@ -27,7 +27,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.ToString(), Is.EqualTo(queryString));
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.ToString(), Is.EqualTo(queryString));
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.ToString(), Is.EqualTo(queryString));
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace BalticAmadeus.FluentMdx.Tests
         {
             //ARRANGE   
             const string queryString = "SELECT " +
-                                       "NON EMPTY { } ON COLUMNS " +
+                                       "NON EMPTY {  } ON COLUMNS " +
                                        "FROM [Cube]";
 
             //ACT
@@ -79,7 +79,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.ToString(), Is.EqualTo(queryString));
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(queryString));
+            Assert.That(query.ToString(), Is.EqualTo(queryString));
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -140,7 +140,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -162,7 +162,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -184,7 +184,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT        
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -206,7 +206,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -228,7 +228,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -256,7 +256,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
 
         [Test]
@@ -290,7 +290,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ASSERT
             Assert.That(query, Is.Not.Null);
-            Assert.That(query.GetStringExpression(), Is.EqualTo(expectedString));
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
     }
 }

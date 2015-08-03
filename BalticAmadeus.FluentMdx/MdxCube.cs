@@ -2,21 +2,31 @@
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxCube : MdxIdentifier
+    public class MdxCube : MdxExpressionBase
     {
-        public MdxCube(params string[] titles) 
-            : this(new List<string>(titles))
+        private readonly IList<string> _titles; 
+
+        public MdxCube() 
         {
+            _titles = new List<string>();
         }
 
-        internal MdxCube(IList<string> identifiers) 
-            : base(identifiers, new List<MdxNavigationFunction>())
+        public IEnumerable<string> Titles
         {
+            get { return _titles; }
         }
-        
-        public override string GetStringExpression()
+
+        public MdxCube Titled(params string[] titles)
         {
-            return string.Format("[{0}]", string.Join("].[", Identifiers));
+            foreach (var title in titles)
+                _titles.Add(title);
+
+            return this;
+        }
+
+        protected override string GetStringExpression()
+        {
+            return string.Format("[{0}]", string.Join("].[", Titles));
         }
     }
 }

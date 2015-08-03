@@ -10,11 +10,9 @@ namespace BalticAmadeus.FluentMdx
     {
         private readonly ILexer _lexer;
 
-        public MdxParser() : this(new Lexer.Lexer()) { }
-
-        internal MdxParser(ILexer lexer)
+        public MdxParser()
         {
-            _lexer = lexer;
+            _lexer = new Lexer.Lexer();
         }
 
         public MdxQuery ParseQuery(string source)
@@ -25,7 +23,7 @@ namespace BalticAmadeus.FluentMdx
 
             var enumerator = tokens.GetTwoWayEnumerator();
             
-            IMdxExpression expression;
+            MdxExpressionBase expression;
             if (!TryParseQuery(enumerator, out expression))
             {
                 var tokensLeft = new List<Token>();
@@ -59,7 +57,7 @@ namespace BalticAmadeus.FluentMdx
             return false;
         }
 
-        private static bool TryParseQuery(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        private static bool TryParseQuery(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
 
@@ -70,7 +68,7 @@ namespace BalticAmadeus.FluentMdx
 
             do
             {
-                IMdxExpression childExpression;
+                MdxExpressionBase childExpression;
                 if (!TryParseAxis(enumerator, out childExpression))
                     return false;
 
@@ -82,7 +80,7 @@ namespace BalticAmadeus.FluentMdx
 
             if (IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
             {
-                IMdxExpression innerQuery;
+                MdxExpressionBase innerQuery;
                 if (!TryParseQuery(enumerator, out innerQuery))
                     return false;
 
@@ -95,7 +93,7 @@ namespace BalticAmadeus.FluentMdx
             {
                 do
                 {
-                    IMdxExpression childExpression;
+                    MdxExpressionBase childExpression;
                     if (!TryParseCube(enumerator, out childExpression))
                         return false;
 
@@ -109,60 +107,84 @@ namespace BalticAmadeus.FluentMdx
                 return true;
             }
 
-            IMdxExpression member;
-            if (TryParseMember(enumerator, out member))
+            MdxExpressionBase slicer;
+            if (TryParseMember(enumerator, out slicer))
             {
-                var memberTuple = new MdxMemberTuple().With((MdxMember) member);
-                query.Where(memberTuple);
-
-                expression = query;
-                return true;
+                if (slicer is MdxMember)
+                {
+                    var memberTuple = new MdxTuple().With((MdxMember) slicer);
+                    query.Where(memberTuple);
+                }
+                else
+                {
+                    var memberTuple = new MdxTuple().With((MdxRange)slicer);
+                    query.Where(memberTuple);
+                }
             }
-
-            IMdxExpression set;
-            if (TryParseSet(enumerator, out set))
+            else if (TryParseSet(enumerator, out slicer))
             {
-                var setTuple = new MdxSetTuple().With((MdxSet)set);
+                var setTuple = new MdxTuple().With((MdxSet)slicer);
                 query.Where(setTuple);
-
-                expression = query;
-                return true;
             }
-
-            IMdxExpression tuple;
-            if (TryParseTuple(enumerator, out tuple))
+            else if (TryParseTuple(enumerator, out slicer))
             {
-                query.Where((MdxTuple)tuple);
-
-                expression = query;
-                return true;
+                query.Where((MdxTuple)slicer);
             }
-           
-            return false;
+            else if (TryParseFunction(enumerator, out slicer))
+            {
+                query.Where((MdxTuple) slicer);
+
+            }
+            else
+            {
+                return false;
+            }
+
+            expression = query;
+            return true;
         }
 
-        private static bool TryParseTuple(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        private static bool TryParseTuple(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftCurlyBracket))
                 return false;
 
-            var members = new List<MdxMember>();
-            var sets = new List<MdxSet>();
+            var tuple = new MdxTuple();
+
+            if (IsNextTokenValid(enumerator, TokenType.RightCurlyBracket))
+            {
+                expression = tuple;
+
+                return true;
+            }
+
             do
             {
-                IMdxExpression childExpression;
+                MdxExpressionBase childExpression;
                 if (TryParseMember(enumerator, out childExpression))
                 {
-                    members.Add((MdxMember)childExpression);
-                    continue;
-                }
-
-                if (TryParseSet(enumerator, out childExpression))
+                    if (childExpression is MdxMember)
+                    {
+                        tuple.With((MdxMember)childExpression);
+                    }
+                    else
+                    {
+                        tuple.With((MdxRange)childExpression);
+                    }
+                } 
+                else if (TryParseSet(enumerator, out childExpression))
                 {
-                    sets.Add((MdxSet)childExpression);
-                    continue;
+                    tuple.With((MdxSet)childExpression);
+                }
+                else if (TryParseFunction(enumerator, out childExpression))
+                {
+                    tuple.With((MdxFunction) childExpression);
+                }
+                else
+                {
+                    return false;
                 }
 
             } while (IsNextTokenValid(enumerator, TokenType.Comma));
@@ -170,43 +192,52 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.RightCurlyBracket))
                 return false;
 
-            if (members.Any() && sets.Any())
-                return false;
-
-            if (!members.Any() && !sets.Any())
-                expression = new MdxTuple();
-
-            if (members.Any())
-                expression = new MdxMemberTuple(members);
-
-            if (sets.Any())
-                expression = new MdxSetTuple(sets);
+            expression = tuple;
 
             return true;
         }
 
-        private static bool TryParseSet(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        private static bool TryParseSet(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
                 return false;
 
-            var members = new List<MdxMember>();
-            var tuples = new List<MdxTuple>();
+            var set = new MdxSet();
+
+            if (IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
+            {
+                expression = set;
+
+                return true;
+            }
+
             do
             {
-                IMdxExpression childExpression;
+                MdxExpressionBase childExpression;
                 if (TryParseMember(enumerator, out childExpression))
                 {
-                    members.Add((MdxMember)childExpression);   
-                    continue;
+                    if (childExpression is MdxMember)
+                    {
+                        set.With((MdxMember)childExpression);
+                    }
+                    else
+                    {
+                        set.With((MdxRange)childExpression);
+                    }
                 }
-
-                if (TryParseTuple(enumerator, out childExpression))
+                else if (TryParseTuple(enumerator, out childExpression))
                 {
-                    tuples.Add((MdxTuple)childExpression);
-                    continue;                    
+                    set.With((MdxTuple)childExpression);
+                }
+                else if (TryParseFunction(enumerator, out childExpression))
+                {
+                    set.With((MdxFunction)childExpression);
+                }
+                else
+                {
+                    return false;
                 }
 
             } while (IsNextTokenValid(enumerator, TokenType.Comma));
@@ -214,45 +245,34 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
                 return false;
 
-            if (members.Any() && tuples.Any())
-                return false;
-
-            if (!members.Any() && !tuples.Any())
-                expression = new MdxSet();
-
-            if (members.Any())
-                expression = new MdxMemberSet(members);
-
-            if (tuples.Any())
-                expression = new MdxTupleSet(tuples);
+            expression = set;
 
             return true;
         }
 
-        internal static bool TryParseMember(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseMember(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
-
-            var identifiers = new List<string>();
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
                 return false;
 
+            var member = new MdxMember();
+
             if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 return false;
 
-            identifiers.Add(enumerator.Current.Value);
+            member.Titled(enumerator.Current.Value);
 
             if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                 return false;
 
-            var appliedFunctions = new List<MdxNavigationFunction>();
             while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator))
             {
-                IMdxExpression function;
+                MdxExpressionBase function;
                 if (TryParseNavigationFunction(enumerator, out function))
                 {
-                    appliedFunctions.Add((MdxNavigationFunction)function);
+                    member.WithFunction((MdxNavigationFunction) function);
                     continue;
                 }
 
@@ -262,15 +282,16 @@ namespace BalticAmadeus.FluentMdx
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                     return false;
 
-                identifiers.Add(enumerator.Current.Value);
+                member.Titled(enumerator.Current.Value);
 
                 if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                     return false;
-            } 
+            }
 
             if (!IsNextTokenValid(enumerator, TokenType.ValueSeparator))
             {
-                expression = new MdxMember(identifiers, appliedFunctions);
+                expression = member;
+
                 return true;
             }
 
@@ -287,25 +308,28 @@ namespace BalticAmadeus.FluentMdx
             if (IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 memberValue += enumerator.Current.Value;
 
+            member.WithValue(memberValue);
+
             if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                 return false;
-            
+
             while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator))
             {
-                IMdxExpression function;
+                MdxExpressionBase function;
                 if (!TryParseNavigationFunction(enumerator, out function))
                     return false;
 
-                appliedFunctions.Add((MdxNavigationFunction)function);
+                member.WithFunction((MdxNavigationFunction) function);
             }
+
 
             if (!IsNextTokenValid(enumerator, TokenType.RangeSeparator))
             {
-                expression = new MdxValueMember(identifiers, memberValue, appliedFunctions);
+                expression = member;
                 return true;
             }
 
-            var otherIdentifiers = new List<string>();
+            var toMember = new MdxMember();
             do
             {
                 if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
@@ -314,15 +338,12 @@ namespace BalticAmadeus.FluentMdx
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                     return false;
 
-                otherIdentifiers.Add(enumerator.Current.Value);
+                toMember.Titled(enumerator.Current.Value);
 
                 if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                     return false;
 
             } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
-
-            if (identifiers.Where((t, i) => t != otherIdentifiers[i]).Any())
-                throw new ArgumentException("Identifiers for range members must match!");
 
             if (!IsNextTokenValid(enumerator, TokenType.ValueSeparator))
                 return false;
@@ -340,14 +361,16 @@ namespace BalticAmadeus.FluentMdx
             if (IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 rangeValue += enumerator.Current.Value;
 
+            toMember.WithValue(rangeValue);
+
             if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                 return false;
 
-            expression = new MdxRangeMember(identifiers, memberValue, rangeValue);
+            expression = new MdxRange().From(member).To(toMember);
             return true;
         }
 
-        internal static bool TryParseAxis(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseAxis(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
 
@@ -358,21 +381,32 @@ namespace BalticAmadeus.FluentMdx
                 if (!IsNextTokenValid(enumerator, TokenType.Empty))
                     return false;
 
-                axis.NonEmpty();
+                axis.AsNonEmpty();
             }
 
-            IMdxExpression axisParameter;
+            MdxExpressionBase axisParameter;
             if (TryParseTuple(enumerator, out axisParameter))
             {
                 axis.With((MdxTuple)axisParameter);
             } 
             else if (TryParseSet(enumerator, out axisParameter))
             {
-                axis.With(new MdxSetTuple().With((MdxSet)axisParameter));
+                axis.With(new MdxTuple().With((MdxSet)axisParameter));
             } 
             else if (TryParseMember(enumerator, out axisParameter))
             {
-                axis.With(new MdxMemberTuple().With((MdxMember)axisParameter));
+                if (axisParameter is MdxMember)
+                {
+                    axis.With(new MdxTuple().With((MdxMember)axisParameter));
+                }
+                else
+                {
+                    axis.With(new MdxTuple().With((MdxRange)axisParameter));
+                }
+            }
+            else if (TryParseFunction(enumerator, out axisParameter))
+            {
+                axis.With(new MdxTuple().With((MdxMember)axisParameter));
             }
             else
             {
@@ -411,17 +445,18 @@ namespace BalticAmadeus.FluentMdx
                 return false;
 
             string axisName = enumerator.Current.Value;
-            axis.Named(axisName);
+            axis.Titled(axisName);
 
             expression = axis;
             return true;
         }
 
-        internal static bool TryParseCube(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseCube(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
 
-            var identifiers = new List<string>();
+            var cube = new MdxCube();
+
             do
             {
                 if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
@@ -430,18 +465,18 @@ namespace BalticAmadeus.FluentMdx
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                     return false;
 
-                identifiers.Add(enumerator.Current.Value);
+                cube.Titled(enumerator.Current.Value);
 
                 if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                     return false;
                 
             } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
 
-            expression = new MdxCube(identifiers);
+            expression = cube;
             return true;
         }
 
-        internal static bool TryParseNavigationFunction(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseNavigationFunction(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
 
@@ -476,7 +511,7 @@ namespace BalticAmadeus.FluentMdx
             return true;
         }
 
-        internal static bool TryParseFunction(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseFunction(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
 
@@ -498,7 +533,7 @@ namespace BalticAmadeus.FluentMdx
 
             do
             {
-                IMdxExpression childExpression;
+                MdxExpressionBase childExpression;
                 if (TryParseExpression(enumerator, out childExpression))
                 {
                     function.WithParameter((MdxExpression)childExpression);
@@ -514,7 +549,7 @@ namespace BalticAmadeus.FluentMdx
             return true;
         }
 
-        internal static bool TryParseExpression(ITwoWayEnumerator<Token> enumerator, out IMdxExpression expression)
+        internal static bool TryParseExpression(ITwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
             expression = null;
 
@@ -522,7 +557,7 @@ namespace BalticAmadeus.FluentMdx
 
             do
             {
-                IMdxExpression childExpression;
+                MdxExpressionBase childExpression;
                 if (TryParseFunction(enumerator, out childExpression) ||
                     TryParseTuple(enumerator, out childExpression) ||
                     TryParseSet(enumerator, out childExpression) ||

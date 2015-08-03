@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxQuery : IMdxExpression
+    public class MdxQuery : MdxExpressionBase
     {
         private MdxQuery _innerQuery;
         private readonly IList<MdxCube> _cubes;
@@ -69,7 +69,7 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
-        public string GetStringExpression()
+        protected override string GetStringExpression()
         {
             if (_innerQuery == null)
             {
@@ -93,11 +93,6 @@ namespace BalticAmadeus.FluentMdx
                 string.Join(", ", Axes),
                 InnerQuery,
                 string.Join(", ", WhereClauseTuples));
-        }
-
-        public override string ToString()
-        {
-            return GetStringExpression();
         }
     }
 }
