@@ -23,7 +23,7 @@ namespace BalticAmadeus.FluentMdx.Tests
         public void TwoWayEnumerator_MoveForwardAndBack_WithFewElements_Succeeded()
         {
             //ARRANGE
-            var elements = new List<string> {"FirstItem", "SecondItem", "ThirdItem"};
+            var elements = new List<string> {"FirstItem", "SecondItem"};
 
             //ACT
             //ASSERT
@@ -37,6 +37,7 @@ namespace BalticAmadeus.FluentMdx.Tests
                 Assert.That(twoWayEnumerator.Current, Is.EqualTo("FirstItem"));
                 Assert.That(twoWayEnumerator.MoveNext(), Is.True);
                 Assert.That(twoWayEnumerator.Current, Is.EqualTo("SecondItem"));
+                Assert.That(twoWayEnumerator.MoveNext(), Is.False);
                 Assert.That(twoWayEnumerator.MovePrevious(), Is.True);
                 Assert.That(twoWayEnumerator.Current, Is.EqualTo("FirstItem"));
                 Assert.That(((IEnumerator) twoWayEnumerator).Current, Is.EqualTo(twoWayEnumerator.Current));

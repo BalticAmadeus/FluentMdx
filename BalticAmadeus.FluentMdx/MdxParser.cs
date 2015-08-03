@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using BalticAmadeus.FluentMdx.EnumerableExtensions;
 using BalticAmadeus.FluentMdx.Lexer;
 
@@ -64,7 +63,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.Select))
                 return false;
 
-            var query = new MdxQuery();
+            var query = Mdx.Query();
 
             do
             {
@@ -112,18 +111,18 @@ namespace BalticAmadeus.FluentMdx
             {
                 if (slicer is MdxMember)
                 {
-                    var memberTuple = new MdxTuple().With((MdxMember) slicer);
+                    var memberTuple = Mdx.Tuple().With((MdxMember) slicer);
                     query.Where(memberTuple);
                 }
                 else
                 {
-                    var memberTuple = new MdxTuple().With((MdxRange)slicer);
+                    var memberTuple = Mdx.Tuple().With((MdxRange)slicer);
                     query.Where(memberTuple);
                 }
             }
             else if (TryParseSet(enumerator, out slicer))
             {
-                var setTuple = new MdxTuple().With((MdxSet)slicer);
+                var setTuple = Mdx.Tuple().With((MdxSet)slicer);
                 query.Where(setTuple);
             }
             else if (TryParseTuple(enumerator, out slicer))
@@ -151,7 +150,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.LeftCurlyBracket))
                 return false;
 
-            var tuple = new MdxTuple();
+            var tuple = Mdx.Tuple();
 
             if (IsNextTokenValid(enumerator, TokenType.RightCurlyBracket))
             {
@@ -204,7 +203,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
                 return false;
 
-            var set = new MdxSet();
+            var set = Mdx.Set();
 
             if (IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
             {
@@ -257,7 +256,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
                 return false;
 
-            var member = new MdxMember();
+            var member = Mdx.Member();
 
             if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 return false;
@@ -329,7 +328,7 @@ namespace BalticAmadeus.FluentMdx
                 return true;
             }
 
-            var toMember = new MdxMember();
+            var toMember = Mdx.Member();
             do
             {
                 if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
@@ -366,7 +365,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                 return false;
 
-            expression = new MdxRange().From(member).To(toMember);
+            expression = Mdx.Range().From(member).To(toMember);
             return true;
         }
 
@@ -374,7 +373,7 @@ namespace BalticAmadeus.FluentMdx
         {
             expression = null;
 
-            var axis = new MdxAxis();
+            var axis = Mdx.Axis();
 
             if (IsNextTokenValid(enumerator, TokenType.Non))
             {
@@ -391,22 +390,22 @@ namespace BalticAmadeus.FluentMdx
             } 
             else if (TryParseSet(enumerator, out axisParameter))
             {
-                axis.With(new MdxTuple().With((MdxSet)axisParameter));
+                axis.With(Mdx.Tuple().With((MdxSet)axisParameter));
             } 
             else if (TryParseMember(enumerator, out axisParameter))
             {
                 if (axisParameter is MdxMember)
                 {
-                    axis.With(new MdxTuple().With((MdxMember)axisParameter));
+                    axis.With(Mdx.Tuple().With((MdxMember)axisParameter));
                 }
                 else
                 {
-                    axis.With(new MdxTuple().With((MdxRange)axisParameter));
+                    axis.With(Mdx.Tuple().With((MdxRange)axisParameter));
                 }
             }
             else if (TryParseFunction(enumerator, out axisParameter))
             {
-                axis.With(new MdxTuple().With((MdxMember)axisParameter));
+                axis.With(Mdx.Tuple().With((MdxMember)axisParameter));
             }
             else
             {
@@ -455,7 +454,7 @@ namespace BalticAmadeus.FluentMdx
         {
             expression = null;
 
-            var cube = new MdxCube();
+            var cube = Mdx.Cube();
 
             do
             {
@@ -488,7 +487,7 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
             {
-                expression = new MdxNavigationFunction(functionTitle);
+                expression = Mdx.NavigationFunction().Titled(functionTitle);
                 return true;
             }
             
@@ -507,7 +506,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
                 return false;
 
-            expression = new MdxNavigationFunction(functionTitle, functionParameters);
+            expression = Mdx.NavigationFunction().Titled(functionTitle).WithParameters(functionParameters.ToArray());
             return true;
         }
 
@@ -515,7 +514,7 @@ namespace BalticAmadeus.FluentMdx
         {
             expression = null;
 
-            var function = new MdxFunction();
+            var function = Mdx.Function();
             do
             {
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
@@ -553,7 +552,7 @@ namespace BalticAmadeus.FluentMdx
         {
             expression = null;
 
-            var mdxExpression = new MdxExpression();
+            var mdxExpression = Mdx.Expression();
 
             do
             {

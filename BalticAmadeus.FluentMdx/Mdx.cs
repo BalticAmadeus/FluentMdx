@@ -36,5 +36,20 @@
         {
             return new MdxRange();
         }
+
+        public static MdxFunction Function()
+        {
+            return new MdxFunction();
+        }
+
+        public static MdxNavigationFunction NavigationFunction()
+        {
+            return new MdxNavigationFunction();
+        }
+
+        public static MdxExpression Expression()
+        {
+            return new MdxExpression();
+        }
     }
 }

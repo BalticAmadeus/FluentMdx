@@ -87,7 +87,7 @@ namespace BalticAmadeus.FluentMdx
                 return this;
             }
 
-            var newSet = new MdxSet();
+            var newSet = Mdx.Set();
 
             foreach (var member in _children.OfType<MdxMember>())
                 newSet.With(member);

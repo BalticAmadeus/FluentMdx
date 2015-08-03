@@ -5,25 +5,24 @@ namespace BalticAmadeus.FluentMdx
 {
     public class MdxNavigationFunction : MdxExpressionBase
     {
-        private readonly string _title;
         private readonly IList<string> _functionParameters;
 
-        public MdxNavigationFunction(string title) : this(title, new List<string>()) { }
-
-        internal MdxNavigationFunction(string title, IList<string> functionParameters)
+        public MdxNavigationFunction()
         {
-            _title = title;
-            _functionParameters = functionParameters;
+            _functionParameters = new List<string>();
         }
 
-        public string Title
-        {
-            get { return _title; }
-        }
+        public string Title { get; private set; }
 
         public IEnumerable<string> FunctionParameters
         {
             get { return _functionParameters; }
+        }
+
+        public MdxNavigationFunction Titled(string title)
+        {
+            Title = title;
+            return this;
         }
 
         public MdxNavigationFunction WithParameters(params string[] parameters)

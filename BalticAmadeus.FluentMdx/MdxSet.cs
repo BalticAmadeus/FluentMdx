@@ -107,7 +107,7 @@ namespace BalticAmadeus.FluentMdx
                 return this;
             }
 
-            var newTuple = new MdxTuple();
+            var newTuple = Mdx.Tuple();
 
             foreach (var member in _children.OfType<MdxMember>())
                 newTuple.With(member);
