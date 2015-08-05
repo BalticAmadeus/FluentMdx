@@ -16,7 +16,7 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ARRANGE
             //ACT
             //ASSERT
-            Assert.Throws<ArgumentNullException>(() => { new TwoWayEnumerator<string>(null); });
+            Assert.Throws<ArgumentNullException>(() => { new StatedTwoWayEnumerator<string>(null); });
         }
 
         [Test]
@@ -27,7 +27,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             //ASSERT
-            using (var twoWayEnumerator = elements.GetTwoWayEnumerator())
+            using (var twoWayEnumerator = elements.GetStatedTwoWayEnumerator())
             {
                 Assert.Throws<InvalidOperationException>(() => { var c = twoWayEnumerator.Current; });
                 twoWayEnumerator.Reset();
@@ -41,6 +41,28 @@ namespace BalticAmadeus.FluentMdx.Tests
                 Assert.That(twoWayEnumerator.MovePrevious(), Is.True);
                 Assert.That(twoWayEnumerator.Current, Is.EqualTo("FirstItem"));
                 Assert.That(((IEnumerator) twoWayEnumerator).Current, Is.EqualTo(twoWayEnumerator.Current));
+            }
+        }
+
+        [Test]
+        public void TwoWayEnumerator_Rollback_Ok()
+        {
+            var elements = new List<string>{"A", "B", "C", "D"};
+
+            using (var enumerator = elements.GetStatedTwoWayEnumerator())
+            {
+                enumerator.MoveNext();
+                enumerator.MoveNext();
+                enumerator.MoveNext();
+                enumerator.BackupState();
+                enumerator.MoveNext();
+                enumerator.RestoreState();
+                enumerator.BackupState();
+                enumerator.MoveNext();
+                enumerator.MergeState();
+                enumerator.Reset();
+
+
             }
         }
     }

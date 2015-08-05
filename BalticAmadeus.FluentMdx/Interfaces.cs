@@ -12,7 +12,10 @@
 
     public interface IMdxMember
     {
+    }
 
+    public interface IMdxExpressionOperand
+    {
     }
 
     public interface IMdxParser

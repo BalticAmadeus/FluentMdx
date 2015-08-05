@@ -314,5 +314,28 @@ namespace BalticAmadeus.FluentMdx.Tests
             Assert.That(query, Is.Not.Null);
             Assert.That(query.ToString(), Is.EqualTo(expectedString));
         }
+
+        [Test]
+        [Ignore("Currently NOT is not supported")]
+        public void ParseQuery_WithNegation_ReturnsParsedQuery()
+        {
+            //ARRANGE   
+            const string queryString = "SELECT " +
+                                       "NON EMPTY {[Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3]} ON COLUMNS " +
+                                       "FROM (" +
+                                       "SELECT (Filter([Vessel].[Vessel Name].MEMBERS, NOT [Vessel].[Vessel Name].CurrentMember.MEMBER_CAPTION = \"V\")) ON 0 FROM [TransportWork])";
+
+            const string expectedString = "SELECT " +
+                                       "NON EMPTY {[Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3]} ON COLUMNS " +
+                                       "FROM (" +
+                                       "SELECT (Filter([Vessel].[Vessel Name].MEMBERS, NOT [Vessel].[Vessel Name].CurrentMember.MEMBER_CAPTION = \"V\")) ON 0 FROM [TransportWork])";
+
+            //ACT
+            var query = _parserSut.ParseQuery(queryString);
+
+            //ASSERT
+            Assert.That(query, Is.Not.Null);
+            Assert.That(query.ToString(), Is.EqualTo(expectedString));
+        }
     }
 }

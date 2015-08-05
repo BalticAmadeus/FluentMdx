@@ -26,6 +26,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
         Properties,
         NumberExpression,
         OperationExpression,
-        DateExpression
+        DateExpression,
+        NotOperatorExpression
     }
 }

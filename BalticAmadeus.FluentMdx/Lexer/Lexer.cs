@@ -38,7 +38,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
                 new TokenDefinition(TokenType.DateExpression,
                     "[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}T[0-9]{2}\\:[0-9]{2}\\:[0-9]{2}"),
                 new TokenDefinition(TokenType.NumberExpression, "\\-?[0-9]+(\\.[0-9]+)?"),
-                new TokenDefinition(TokenType.OperationExpression, "<=|>=|\\+|\\-|\\*|\\\\|<|=|>"),
+                new TokenDefinition(TokenType.NotOperatorExpression, "NOT"),
+                new TokenDefinition(TokenType.OperationExpression, "<=|>=|<>|\\+|\\-|\\*|\\/|<|=|>"),
                 new TokenDefinition(TokenType.IdentifierExpression,
                     "[a-zA-Z0-9 \\/\\\\\\-\\:\\'\\\"]*[a-zA-Z0-9\\/\\\\\\-\\:\\'\\\"]"),
             };

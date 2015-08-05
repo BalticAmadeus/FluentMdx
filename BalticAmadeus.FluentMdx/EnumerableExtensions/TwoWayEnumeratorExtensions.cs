@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 namespace BalticAmadeus.FluentMdx.EnumerableExtensions
 {
-    internal static class TwoWayEnumeratorExtensions
+    internal static class StatedIteratorExtensions
     {
-        public static ITwoWayEnumerator<T> GetTwoWayEnumerator<T>(this IEnumerable<T> source)
+        public static IStatedTwoWayEnumerator<T> GetStatedTwoWayEnumerator<T>(this IEnumerable<T> source)
         {
-            return new TwoWayEnumerator<T>(source.GetEnumerator());
+            return new StatedTwoWayEnumerator<T>(source.GetEnumerator());
         }
     }
 }

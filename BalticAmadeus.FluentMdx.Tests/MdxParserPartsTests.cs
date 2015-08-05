@@ -25,7 +25,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -43,7 +43,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseNavigationFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseNavigationFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -61,7 +61,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseAxis(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseAxis(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -79,7 +79,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseAxis(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseAxis(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -97,7 +97,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseCube(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseCube(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -115,7 +115,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -133,7 +133,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseMember(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -151,7 +151,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -169,7 +169,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -187,7 +187,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -205,7 +205,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -223,7 +223,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -241,7 +241,7 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
@@ -259,7 +259,25 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseExpression_WithNegatedExpression_SuceeedsAndReturnsFunction()
+        {
+            //ARRANGE
+            const string queryString = "MYFUNCTION.Func(1 + 'asd')";
+
+            const string expectedString = "MYFUNCTION.Func(1 + 'asd')";
+
+            //ACT
+            MdxExpressionBase expression;
+            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);

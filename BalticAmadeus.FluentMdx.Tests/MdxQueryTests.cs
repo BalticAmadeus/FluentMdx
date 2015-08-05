@@ -17,9 +17,9 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             var query = Mdx.Query()
-                .On(Mdx.Axis().Titled("COLUMNS").With(Mdx.Tuple().With(Mdx.Member().Titled("Dim Hierarchy").Titled("Dim"))).NonEmpty())
-                .From(Mdx.Cube().Titled("Cube"))
-                .Where(Mdx.Tuple().With(Mdx.Set().With(Mdx.Member().Titled("Dim Hierarchy", "Dim", "Dim Key").WithValue("1"))));
+                .On(Mdx.Axis("COLUMNS").WithSlicer(Mdx.Tuple().With(Mdx.Member("Dim Hierarchy", "Dim"))).AsNonEmpty())
+                .From(Mdx.Cube("Cube"))
+                .Where(Mdx.Tuple().With(Mdx.Set().With(Mdx.Member("Dim Hierarchy", "Dim", "Dim Key").WithValue("1"))));
 
             //ASSERT
             Assert.That(query.ToString(), Is.EqualTo(expectedQueryString));
@@ -37,10 +37,10 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             var query = Mdx.Query()
-                .On(Mdx.Axis().Titled("COLUMNS").Empty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim1 Hierarchy", "Dim1"))))
-                .On(Mdx.Axis().Titled("ROWS").Empty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim2 Hierarchy", "Dim2"))).WithProperties("CHILDREN_CARDINALITY"))
-                .From(Mdx.Cube().Titled("Cube"))
-                .Where(Mdx.Tuple().With(Mdx.Set().With(Mdx.Member().Titled("Dim2 Hierarchy", "Dim2", "Dim2 Key").WithValue("1"))));
+                .On(Mdx.Axis("COLUMNS").AsEmpty().WithSlicer(Mdx.Tuple().With(Mdx.Member("Dim1 Hierarchy", "Dim1"))))
+                .On(Mdx.Axis("ROWS").AsEmpty().WithSlicer(Mdx.Tuple().With(Mdx.Member("Dim2 Hierarchy", "Dim2"))).WithProperties("CHILDREN_CARDINALITY"))
+                .From(Mdx.Cube("Cube"))
+                .Where(Mdx.Tuple().With(Mdx.Set().With(Mdx.Member("Dim2 Hierarchy", "Dim2", "Dim2 Key").WithValue("1"))));
 
             //ASSERT
             Assert.That(query.ToString(), Is.EqualTo(expectedQueryString));
@@ -57,11 +57,14 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             //ACT
             var query = Mdx.Query()
-                .On(Mdx.Axis().Titled("ROWS").NonEmpty().With(Mdx.Tuple().With(Mdx.Member().Titled("Dim Hierarchy", "Dim"))))
-                .From(Mdx.Cube().Titled("Cube1"))
-                .From(Mdx.Cube().Titled("Cube2"))
-                .From(Mdx.Cube().Titled("Cube3"))
-                .Where(Mdx.Tuple().With(Mdx.Set().With(Mdx.Range().From(Mdx.Member().Titled("Dim Hierarchy", "Dim", "Dim Key").WithValue("1")).To(Mdx.Member().Titled("Dim Hierarchy", "Dim", "Dim Key").WithValue("4")))));
+                .On(Mdx.Axis("ROWS").AsNonEmpty().WithSlicer(Mdx.Tuple().With(Mdx.Member("Dim Hierarchy", "Dim"))))
+                .From(Mdx.Cube("Cube1"))
+                .From(Mdx.Cube("Cube2"))
+                .From(Mdx.Cube("Cube3"))
+                .Where(Mdx.Tuple().With(Mdx.Set().With(
+                    Mdx.Range()
+                        .From(Mdx.Member("Dim Hierarchy", "Dim", "Dim Key").WithValue("1"))
+                        .To(Mdx.Member("Dim Hierarchy", "Dim", "Dim Key").WithValue("4")))));
             
             //ASSERT
             Assert.That(query.ToString(), Is.EqualTo(expectedQueryString));

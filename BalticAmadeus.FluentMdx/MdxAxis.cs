@@ -52,7 +52,7 @@ namespace BalticAmadeus.FluentMdx
                     Title);
         }
 
-        public MdxAxis With(MdxTuple parameter)
+        public MdxAxis WithSlicer(MdxTuple parameter)
         {
             AxisSlicer = parameter;
             return this;
@@ -64,13 +64,13 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
-        public MdxAxis NonEmpty()
+        public MdxAxis AsNonEmpty()
         {
             IsNonEmpty = true;
             return this;
         }
 
-        public MdxAxis Empty()
+        public MdxAxis AsEmpty()
         {
             IsNonEmpty = false;
             return this;

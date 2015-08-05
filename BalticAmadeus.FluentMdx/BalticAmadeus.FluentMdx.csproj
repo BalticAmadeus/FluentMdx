@@ -35,8 +35,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnumerableExtensions\ITwoWayEnumerator.cs" />
-    <Compile Include="EnumerableExtensions\TwoWayEnumerator.cs" />
+    <Compile Include="EnumerableExtensions\IStatedTwoWayEnumerator.cs" />
+    <Compile Include="EnumerableExtensions\StatedTwoWayEnumerator.cs" />
     <Compile Include="EnumerableExtensions\TwoWayEnumeratorExtensions.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Lexer\ILexer.cs" />

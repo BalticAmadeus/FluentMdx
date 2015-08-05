@@ -4,13 +4,17 @@ using System.Text;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxExpression : MdxExpressionBase
+    public class MdxExpression : MdxExpressionBase, IMdxExpressionOperand
     {
+        private readonly IList<IMdxExpressionOperand> _operands; 
+
         private readonly IList<string> _operations;
         private readonly IList<string> _expressions;
 
         public MdxExpression()
         {
+            _operands = new List<IMdxExpressionOperand>();
+
             _operations = new List<string>();
             _expressions = new List<string>();
         }
@@ -24,6 +28,12 @@ namespace BalticAmadeus.FluentMdx
         public MdxExpression WithOperation(string operation)
         {
             _operations.Add(operation);
+            return this;
+        }
+
+        public MdxExpression WithOperand(IMdxExpressionOperand operand)
+        {
+            _operands.Add(operand);
             return this;
         }
 
