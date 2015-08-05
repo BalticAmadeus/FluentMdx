@@ -39,6 +39,13 @@ namespace BalticAmadeus.FluentMdx.EnumerableExtensions
                 return;
 
             var lastState = _states.Pop();
+
+            if (!_states.Any())
+            {
+                _states.Push(lastState);
+                return;
+            }
+
             _index = _index - lastState.Displacement;
         }
 

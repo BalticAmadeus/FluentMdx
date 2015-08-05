@@ -316,19 +316,22 @@ namespace BalticAmadeus.FluentMdx.Tests
         }
 
         [Test]
-        [Ignore("Currently NOT is not supported")]
-        public void ParseQuery_WithNegation_ReturnsParsedQuery()
+        public void ParseQuery_WithFunctionsAndExpressions_ReturnsParsedQuery()
         {
             //ARRANGE   
             const string queryString = "SELECT " +
-                                       "NON EMPTY {[Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3]} ON COLUMNS " +
-                                       "FROM (" +
-                                       "SELECT (Filter([Vessel].[Vessel Name].MEMBERS, NOT [Vessel].[Vessel Name].CurrentMember.MEMBER_CAPTION = \"V\")) ON 0 FROM [TransportWork])";
+                                       "NON EMPTY { [Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3] } ON COLUMNS, " +
+                                       "NON EMPTY { [Dim Hierarchy2].[Dim1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } ON ROWS " +
+                                       "FROM ( " +
+                                       "SELECT (Filter([Dim Hierarchy2].[Dim1].MEMBERS, NOT [Dim Hierarchy2].[Dim1].CurrentMember.MEMBER_CAPTION = \"V\")) ON 0 FROM [Cube] " +
+                                       ")";
 
             const string expectedString = "SELECT " +
-                                       "NON EMPTY {[Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3]} ON COLUMNS " +
-                                       "FROM (" +
-                                       "SELECT (Filter([Vessel].[Vessel Name].MEMBERS, NOT [Vessel].[Vessel Name].CurrentMember.MEMBER_CAPTION = \"V\")) ON 0 FROM [TransportWork])";
+                                       "NON EMPTY { [Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3] } ON COLUMNS, " +
+                                       "NON EMPTY { [Dim Hierarchy2].[Dim1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } ON ROWS " +
+                                       "FROM ( " +
+                                       "SELECT { ( Filter([Dim Hierarchy2].[Dim1].MEMBERS, (NOT ([Dim Hierarchy2].[Dim1].CurrentMember.MEMBER_CAPTION = \"V\"))) ) } ON 0 FROM [Cube] " +
+                                       ")";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);

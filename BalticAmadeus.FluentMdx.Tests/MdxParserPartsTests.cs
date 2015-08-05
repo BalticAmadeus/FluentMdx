@@ -268,20 +268,74 @@ namespace BalticAmadeus.FluentMdx.Tests
         }
 
         [Test]
-        public void ParseExpression_WithNegatedExpression_SuceeedsAndReturnsFunction()
+        public void ParseExpression_WithNegatedExpression_SuceeedsAndReturnsExpression()
         {
             //ARRANGE
-            const string queryString = "MYFUNCTION.Func(1 + 'asd')";
+            const string queryString = "NOT 1=1+2-1-1";
 
-            const string expectedString = "MYFUNCTION.Func(1 + 'asd')";
+            const string expectedString = "(NOT (1 = 1 + 2 - 1 - 1))";
 
             //ACT
             MdxExpressionBase expression;
-            bool isSucceeded = MdxParser.TryParseFunction(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
+            bool isSucceeded = MdxParser.TryParseExpression(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
 
             //ASSERT
             Assert.That(isSucceeded, Is.True);
-            Assert.That(expression, Is.InstanceOf<MdxFunction>());
+            Assert.That(expression, Is.InstanceOf<MdxExpression>());
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseExpression_WithNegatedEqualityExpression_SuceeedsAndReturnsExpression()
+        {
+            //ARRANGE
+            const string queryString = "TRUE AND NOT 1=2";
+
+            const string expectedString = "TRUE AND (NOT (1 = 2))";
+
+            //ACT
+            MdxExpressionBase expression;
+            bool isSucceeded = MdxParser.TryParseExpression(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxExpression>());
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
+        }
+        
+        [Test]
+        public void ParseExpression_WithSimpleExpression_SuceeedsAndReturnsExpression()
+        {
+            //ARRANGE
+            const string queryString = "TRUE AND NOT FALSE";
+
+            const string expectedString = "TRUE AND (NOT (FALSE))";
+
+            //ACT
+            MdxExpressionBase expression;
+            bool isSucceeded = MdxParser.TryParseExpression(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxExpression>());
+            Assert.That(expression.ToString(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseRange_WithTwoMembers_SuceeedsAndReturnsRange()
+        {
+            //ARRANGE
+            const string queryString = "[A].&[1]:[A].&[2]";
+
+            const string expectedString = "[A].&[1]:[A].&[2]";
+
+            //ACT
+            MdxExpressionBase expression;
+            bool isSucceeded = MdxParser.TryParseRange(_lexer.Tokenize(queryString).GetStatedTwoWayEnumerator(), out expression);
+
+            //ASSERT
+            Assert.That(isSucceeded, Is.True);
+            Assert.That(expression, Is.InstanceOf<MdxRange>());
             Assert.That(expression.ToString(), Is.EqualTo(expectedString));
         }
     }

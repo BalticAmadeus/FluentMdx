@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxMember : MdxExpressionBase, IMdxMember
+    public class MdxMember : MdxExpressionBase, IMdxMember, IMdxExpressionOperand
     {
         private readonly IList<string> _titles;
         private readonly IList<MdxNavigationFunction> _navigationFunctions;

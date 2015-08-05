@@ -7,22 +7,17 @@ namespace BalticAmadeus.FluentMdx
     public class MdxExpression : MdxExpressionBase, IMdxExpressionOperand
     {
         private readonly IList<IMdxExpressionOperand> _operands; 
-
         private readonly IList<string> _operations;
-        private readonly IList<string> _expressions;
+        private bool _isNegative;
+        private bool _isNot;
 
         public MdxExpression()
         {
+            _isNegative = false;
+            _isNot = false;
+
             _operands = new List<IMdxExpressionOperand>();
-
             _operations = new List<string>();
-            _expressions = new List<string>();
-        }
-
-        public MdxExpression WithOperand(string operand)
-        {
-            _expressions.Add(operand);
-            return this;
         }
 
         public MdxExpression WithOperation(string operation)
@@ -37,15 +32,36 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
+        public MdxExpression AsNegative()
+        {
+            _isNegative = true;
+            return this;
+        }
+
+        public MdxExpression AsNegated()
+        {
+            _isNot = true;
+            return this;
+        }
+
         protected override string GetStringExpression()
         {
             var sb = new StringBuilder();
 
-            var operandsEnumerator = _expressions.GetEnumerator();
+            if (_isNegative)
+                sb.Append("-(");
+
+            if (_isNot)
+                sb.Append("NOT (");
+
+            var operandsEnumerator = _operands.GetEnumerator();
             if (!operandsEnumerator.MoveNext())
                 throw new InvalidOperationException("Expression must have at least one operand!");
 
-            sb.Append(operandsEnumerator.Current);
+            if (operandsEnumerator.Current is MdxExpression)
+                sb.Append(string.Format("({0})", operandsEnumerator.Current));
+            else
+                sb.Append(operandsEnumerator.Current);
 
             foreach (var op in _operations)
             {
@@ -56,8 +72,17 @@ namespace BalticAmadeus.FluentMdx
                 if (!operandsEnumerator.MoveNext())
                     throw new InvalidOperationException("Expression expects more operands that specified!");
 
-                sb.Append(operandsEnumerator.Current);
+                if (operandsEnumerator.Current is MdxExpression)
+                    sb.Append(string.Format("({0})", operandsEnumerator.Current));
+                else
+                    sb.Append(operandsEnumerator.Current);
             }
+
+            if (_isNegative)
+                sb.Append(")");
+
+            if (_isNot)
+                sb.Append(")");
 
             return sb.ToString();
         }

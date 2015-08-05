@@ -1,6 +1,6 @@
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxRange : MdxExpressionBase, IMdxMember
+    public class MdxRange : MdxExpressionBase, IMdxMember, IMdxExpressionOperand
     {
         public MdxMember FromMember { get; private set; }
         public MdxMember ToMember { get; private set; }

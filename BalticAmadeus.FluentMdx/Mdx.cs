@@ -76,5 +76,15 @@
         {
             return new MdxExpression();
         }
+
+        public static MdxConstantExpression ConstantValue()
+        {
+            return new MdxConstantExpression();
+        }
+
+        public static MdxConstantExpression ConstantValue(string value)
+        {
+            return new MdxConstantExpression().WithValue(value);
+        }
     }
 }

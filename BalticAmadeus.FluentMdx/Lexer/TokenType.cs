@@ -8,7 +8,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
         Empty,
         From,
         On,
-        Comma,
+        MemberSeparator,
         LeftCurlyBracket,
         RightCurlyBracket,
         IdentifierExpression,
@@ -25,8 +25,11 @@ namespace BalticAmadeus.FluentMdx.Lexer
         Dimension,
         Properties,
         NumberExpression,
-        OperationExpression,
+        MathsOperator,
         DateExpression,
-        NotOperatorExpression
+        NotOperator,
+        LogicsOperator,
+        LogicalExpression,
+        MultiplicationOperator
     }
 }
