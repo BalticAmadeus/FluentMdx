@@ -3,11 +3,17 @@ using System.Linq;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxMember : MdxExpressionBase, IMdxMember, IMdxExpressionOperand
+    /// <summary>
+    /// Represents Mdx member.
+    /// </summary>
+    public sealed class MdxMember : MdxExpressionBase, IMdxMember, IMdxExpressionOperand
     {
         private readonly IList<string> _titles;
         private readonly IList<MdxNavigationFunction> _navigationFunctions;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="MdxMember"/>.
+        /// </summary>
         public MdxMember()
         {
             _titles = new List<string>();    
@@ -16,18 +22,32 @@ namespace BalticAmadeus.FluentMdx
             Value = default(string);
         }
 
+        /// <summary>
+        /// Gets the value of <see cref="MdxMember"/>.
+        /// </summary>
         public string Value { get; private set; } 
 
+        /// <summary>
+        /// Gets the collection of applied titles.
+        /// </summary>
         public IEnumerable<string> Titles
         {
             get { return _titles; }
         }
 
+        /// <summary>
+        /// Gets the collection of applied navigation functions.
+        /// </summary>
         public IEnumerable<MdxNavigationFunction> NavigationFunctions
         {
             get { return _navigationFunctions; }
         }
 
+        /// <summary>
+        /// Appends titles and returns the updated current instance of <see cref="MdxMember"/>. 
+        /// </summary>
+        /// <param name="titles">Collection of titles.</param>
+        /// <returns>Returns the updated current instance of <see cref="MdxMember"/>.</returns>
         public MdxMember Titled(params string[] titles)
         {
             foreach (var title in titles)
@@ -36,6 +56,11 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
+        /// <summary>
+        /// Sets the value for member and returns the updated current instance of <see cref="MdxMember"/>. 
+        /// </summary>
+        /// <param name="value">Specified member value.</param>
+        /// <returns>Returns the updated current instance of <see cref="MdxMember"/>.</returns>
         public MdxMember WithValue(string value)
         {
             Value = value;
@@ -43,6 +68,11 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
+        /// <summary>
+        /// Appends the specified navigation function and returns the updated current instance of <see cref="MdxMember"/>. 
+        /// </summary>
+        /// <param name="function">Specified navigation function.</param>
+        /// <returns>Returns the updated current instance of <see cref="MdxMember"/>.</returns>
         public MdxMember WithFunction(MdxNavigationFunction function)
         {
             _navigationFunctions.Add(function);

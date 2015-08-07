@@ -5,15 +5,26 @@ using BalticAmadeus.FluentMdx.Lexer;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxParser : IMdxParser
+    /// <summary>
+    /// Represents a machine that performs syntactical analysis.
+    /// </summary>
+    public sealed class MdxParser : IMdxParser
     {
         private readonly ILexer _lexer;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="MdxParser"/> with default lexical analysis machine.
+        /// </summary>
         public MdxParser()
         {
             _lexer = new Lexer.Lexer();
         }
 
+        /// <summary>
+        /// Performs lexical and syntactical analyses over specified query string and returns the parsed components combined into <see cref="MdxQuery"/>.
+        /// </summary>
+        /// <param name="source">Mdx query string.</param>
+        /// <returns>Returns the parsed Mdx components combined into <see cref="MdxQuery"/>.</returns>
         public MdxQuery ParseQuery(string source)
         {
             string trimmedSource = source.Trim();
@@ -43,27 +54,21 @@ namespace BalticAmadeus.FluentMdx
 
             return (MdxQuery) expression;
         }
-
-        private static bool IsNextTokenValid(IStatedTwoWayEnumerator<Token> enumerator, TokenType expectedTokenType)
+       
+        /// <summary>
+        /// Performs query syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed query if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
+        internal static bool TryParseQuery(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            if (!enumerator.MoveNext())
-                return false;
-
-            if (enumerator.Current.Type == expectedTokenType)
-                return true;
-
-            enumerator.MovePrevious();
-            return false;
-        }
-        
-        private static bool TryParseQuery(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
-        {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             if (!IsNextTokenValid(enumerator, TokenType.Select))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -74,7 +79,7 @@ namespace BalticAmadeus.FluentMdx
                 MdxExpressionBase childExpression;
                 if (!TryParseAxis(enumerator, out childExpression))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -83,7 +88,7 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.From))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -92,7 +97,7 @@ namespace BalticAmadeus.FluentMdx
                 MdxExpressionBase innerQuery;
                 if (!TryParseQuery(enumerator, out innerQuery))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -100,7 +105,7 @@ namespace BalticAmadeus.FluentMdx
 
                 if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
             }
@@ -111,7 +116,7 @@ namespace BalticAmadeus.FluentMdx
                     MdxExpressionBase childExpression;
                     if (!TryParseCube(enumerator, out childExpression))
                     {
-                        enumerator.RestoreState();
+                        enumerator.RestoreLastSavedPosition();
                         return false;
                     }
 
@@ -122,7 +127,7 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.Where))
             {
                 expression = query;
-                enumerator.MergeState();
+                enumerator.RemoveLastSavedState();
                 return true;
             }
 
@@ -150,23 +155,29 @@ namespace BalticAmadeus.FluentMdx
             }
             else
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
             expression = query;
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
 
-        private static bool TryParseTuple(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
+        /// <summary>
+        /// Performs tuple syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed tuple if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
+        internal static bool TryParseTuple(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftCurlyBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -176,7 +187,7 @@ namespace BalticAmadeus.FluentMdx
             {
                 expression = tuple;
 
-                enumerator.MergeState();
+                enumerator.RemoveLastSavedState();
                 return true;
             }
 
@@ -201,7 +212,7 @@ namespace BalticAmadeus.FluentMdx
                 }
                 else
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -209,24 +220,31 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.RightCurlyBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
             expression = tuple;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
 
-        private static bool TryParseSet(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
+
+        /// <summary>
+        /// Performs set syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed set if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
+        internal static bool TryParseSet(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -236,7 +254,7 @@ namespace BalticAmadeus.FluentMdx
             {
                 expression = set;
 
-                enumerator.MergeState();
+                enumerator.RemoveLastSavedState();
                 return true;
             }
 
@@ -261,7 +279,7 @@ namespace BalticAmadeus.FluentMdx
                 }
                 else
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -269,19 +287,25 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
             expression = set;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
 
+        /// <summary>
+        /// Performs range syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed range if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
         internal static bool TryParseRange(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             var range = new MdxRange();
@@ -289,13 +313,13 @@ namespace BalticAmadeus.FluentMdx
             MdxExpressionBase fromMember;
             if (!TryParseMember(enumerator, out fromMember))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
             if (!IsNextTokenValid(enumerator, TokenType.RangeSeparator))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -304,7 +328,7 @@ namespace BalticAmadeus.FluentMdx
             MdxExpressionBase toMember;
             if (!TryParseMember(enumerator, out toMember))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -312,18 +336,24 @@ namespace BalticAmadeus.FluentMdx
 
             expression = range;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
-
+        
+        /// <summary>
+        /// Performs member syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed member if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
         internal static bool TryParseMember(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -331,7 +361,7 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -339,7 +369,7 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -354,13 +384,13 @@ namespace BalticAmadeus.FluentMdx
 
                 if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -368,7 +398,7 @@ namespace BalticAmadeus.FluentMdx
 
                 if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
             }
@@ -377,13 +407,13 @@ namespace BalticAmadeus.FluentMdx
             {
                 expression = member;
 
-                enumerator.MergeState();
+                enumerator.RemoveLastSavedState();
                 return true;
             }
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -393,7 +423,7 @@ namespace BalticAmadeus.FluentMdx
                 !IsNextTokenValid(enumerator, TokenType.IdentifierExpression) &&
                 !IsNextTokenValid(enumerator, TokenType.MathsOperator))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -406,7 +436,7 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -415,7 +445,7 @@ namespace BalticAmadeus.FluentMdx
                 MdxExpressionBase function;
                 if (!TryParseNavigationFunction(enumerator, out function))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -424,13 +454,19 @@ namespace BalticAmadeus.FluentMdx
 
             expression = member;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
-
+        
+        /// <summary>
+        /// Performs axis syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed axis if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
         internal static bool TryParseAxis(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             var axis = Mdx.Axis();
@@ -439,7 +475,7 @@ namespace BalticAmadeus.FluentMdx
             {
                 if (!IsNextTokenValid(enumerator, TokenType.Empty))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -469,7 +505,7 @@ namespace BalticAmadeus.FluentMdx
             }
             else
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -477,7 +513,7 @@ namespace BalticAmadeus.FluentMdx
             {
                 if (!IsNextTokenValid(enumerator, TokenType.Properties))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -485,7 +521,7 @@ namespace BalticAmadeus.FluentMdx
                 {
                     if (!IsNextTokenValid(enumerator, TokenType.DimensionProperty))
                     {
-                        enumerator.RestoreState();
+                        enumerator.RestoreLastSavedPosition();
                         return false;
                     }
 
@@ -498,7 +534,7 @@ namespace BalticAmadeus.FluentMdx
                 {
                     if (!IsNextTokenValid(enumerator, TokenType.DimensionProperty))
                     {
-                        enumerator.RestoreState();
+                        enumerator.RestoreLastSavedPosition();
                         return false;
                     }
 
@@ -508,14 +544,14 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.On))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
-            if (!IsNextTokenValid(enumerator, TokenType.AxisName) &&
+            if (!IsNextTokenValid(enumerator, TokenType.AxisNameIdentifier) &&
                 !IsNextTokenValid(enumerator, TokenType.NumberExpression))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -524,13 +560,19 @@ namespace BalticAmadeus.FluentMdx
 
             expression = axis;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
-
+        
+        /// <summary>
+        /// Performs cube syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed cube if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
         internal static bool TryParseCube(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             var cube = Mdx.Cube();
@@ -539,13 +581,13 @@ namespace BalticAmadeus.FluentMdx
             {
                 if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -553,7 +595,7 @@ namespace BalticAmadeus.FluentMdx
 
                 if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
                 
@@ -561,19 +603,25 @@ namespace BalticAmadeus.FluentMdx
 
             expression = cube;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
 
+        /// <summary>
+        /// Performs navigation function syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed navigation function if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
         internal static bool TryParseNavigationFunction(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression) &&
                 !IsNextTokenValid(enumerator, TokenType.DimensionProperty))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -583,7 +631,7 @@ namespace BalticAmadeus.FluentMdx
             {
                 expression = Mdx.NavigationFunction().Titled(functionTitle);
 
-                enumerator.MergeState();
+                enumerator.RemoveLastSavedState();
                 return true;
             }
             
@@ -596,7 +644,7 @@ namespace BalticAmadeus.FluentMdx
                     !IsNextTokenValid(enumerator, TokenType.IdentifierExpression) &&
                     !IsNextTokenValid(enumerator, TokenType.MathsOperator))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -611,19 +659,25 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
             expression = Mdx.NavigationFunction().Titled(functionTitle).WithParameters(functionParameters.ToArray());
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
-
+        
+        /// <summary>
+        /// Performs function syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed function if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
         internal static bool TryParseFunction(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             var function = Mdx.Function();
@@ -631,7 +685,7 @@ namespace BalticAmadeus.FluentMdx
             {
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -641,7 +695,7 @@ namespace BalticAmadeus.FluentMdx
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -649,7 +703,7 @@ namespace BalticAmadeus.FluentMdx
             {
                 expression = function;
 
-                enumerator.MergeState();
+                enumerator.RemoveLastSavedState();
                 return true;
             }
 
@@ -658,29 +712,35 @@ namespace BalticAmadeus.FluentMdx
                 MdxExpressionBase childExpression;
                 if (!TryParseExpression(enumerator, out childExpression))
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 } 
                 
-                function.WithParameter((MdxExpression)childExpression);    
+                function.WithParameters((MdxExpression)childExpression);    
                 
             } while (IsNextTokenValid(enumerator, TokenType.MemberSeparator));
 
             if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
             expression = function;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
-
+        
+        /// <summary>
+        /// Performs expression syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed expression if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
         internal static bool TryParseExpression(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             var mdxExpression = Mdx.Expression();
@@ -717,7 +777,7 @@ namespace BalticAmadeus.FluentMdx
                 {
                     if (!TryParseExpression(enumerator, out childExpression))
                     {
-                        enumerator.RestoreState();
+                        enumerator.RestoreLastSavedPosition();
                         return false;
                     }
 
@@ -727,7 +787,7 @@ namespace BalticAmadeus.FluentMdx
                 {
                     if (!TryParseExpression(enumerator, out childExpression))
                     {
-                        enumerator.RestoreState();
+                        enumerator.RestoreLastSavedPosition();
                         return false;
                     }
 
@@ -735,13 +795,13 @@ namespace BalticAmadeus.FluentMdx
 
                     if (!IsNextTokenValid(enumerator, TokenType.RightRoundBracket))
                     {
-                        enumerator.RestoreState();
+                        enumerator.RestoreLastSavedPosition();
                         return false;
                     }
                 }
                 else
                 {
-                    enumerator.RestoreState();
+                    enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
@@ -749,19 +809,25 @@ namespace BalticAmadeus.FluentMdx
                     !IsNextTokenValid(enumerator, TokenType.LogicsOperator))
                     break;
 
-                mdxExpression.WithOperation(enumerator.Current.Value);
+                mdxExpression.WithOperator(enumerator.Current.Value);
 
             } while (true);
 
             expression = mdxExpression;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
         }
 
+        /// <summary>
+        /// Performs constant value syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
+        /// </summary>
+        /// <param name="enumerator">Extended enumerator of collection of <see cref="Token"/> objects.</param>
+        /// <param name="expression">Output parsed constant value if syntactic analysis was succeeded.</param>
+        /// <returns><value>True</value> if succeeded. <value>False</value> if failed.</returns>
         internal static bool TryParseConstantValue(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
         {
-            enumerator.BackupState();
+            enumerator.SavePosition();
             expression = null;
 
             var constantValue = Mdx.ConstantValue();
@@ -771,7 +837,7 @@ namespace BalticAmadeus.FluentMdx
                 !IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
                 !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
             {
-                enumerator.RestoreState();
+                enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
@@ -783,8 +849,20 @@ namespace BalticAmadeus.FluentMdx
 
             expression = constantValue;
 
-            enumerator.MergeState();
+            enumerator.RemoveLastSavedState();
             return true;
+        }
+
+        private static bool IsNextTokenValid(IStatedTwoWayEnumerator<Token> enumerator, TokenType expectedTokenType)
+        {
+            if (!enumerator.MoveNext())
+                return false;
+
+            if (enumerator.Current.Type == expectedTokenType)
+                return true;
+
+            enumerator.MovePrevious();
+            return false;
         }
     }
 }

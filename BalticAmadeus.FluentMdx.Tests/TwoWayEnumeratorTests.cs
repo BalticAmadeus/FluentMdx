@@ -54,12 +54,12 @@ namespace BalticAmadeus.FluentMdx.Tests
                 enumerator.MoveNext();
                 enumerator.MoveNext();
                 enumerator.MoveNext();
-                enumerator.BackupState();
+                enumerator.SavePosition();
                 enumerator.MoveNext();
-                enumerator.RestoreState();
-                enumerator.BackupState();
+                enumerator.RestoreLastSavedPosition();
+                enumerator.SavePosition();
                 enumerator.MoveNext();
-                enumerator.MergeState();
+                enumerator.RemoveLastSavedState();
                 enumerator.Reset();
 
 

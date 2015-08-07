@@ -4,40 +4,81 @@ using System.Text;
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxExpression : MdxExpressionBase, IMdxExpressionOperand
+    /// <summary>
+    /// Represents arithmetics, logics or equality expressions used in Mdx query.
+    /// </summary>
+    public sealed class MdxExpression : MdxExpressionBase, IMdxExpressionOperand
     {
         private readonly IList<IMdxExpressionOperand> _operands; 
-        private readonly IList<string> _operations;
+        private readonly IList<string> _operators;
         private bool _isNegative;
         private bool _isNot;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="MdxExpression"/>.
+        /// </summary>
         public MdxExpression()
         {
             _isNegative = false;
             _isNot = false;
 
             _operands = new List<IMdxExpressionOperand>();
-            _operations = new List<string>();
+            _operators = new List<string>();
         }
 
-        public MdxExpression WithOperation(string operation)
+        /// <summary>
+        /// Appends the operation to the end of expression and returns the updated current <see cref="MdxExpression"/>.
+        /// </summary>
+        /// <param name="operationOperator">Appended operation operator.</param>
+        /// <returns>Returns the updated current <see cref="MdxExpression"/>.</returns>
+        public MdxExpression WithOperator(string operationOperator)
         {
-            _operations.Add(operation);
+            _operators.Add(operationOperator);
             return this;
         }
 
+        /// <summary>
+        /// Appends the <see cref="IMdxExpressionOperand"/> to the end of expression and 
+        /// returns the updated current <see cref="MdxExpression"/>.
+        /// </summary>
+        /// <param name="operand">Appended <see cref="IMdxExpressionOperand"/>.</param>
+        /// <returns>Returns the updated current <see cref="MdxExpression"/>.</returns>
         public MdxExpression WithOperand(IMdxExpressionOperand operand)
         {
             _operands.Add(operand);
             return this;
         }
 
+
+        /// <summary>
+        /// Appends the specified operator and <see cref="IMdxExpressionOperand"/> to the 
+        /// end of expression and returns the updated current <see cref="MdxExpression"/>.
+        /// </summary>
+        /// <param name="operationOperator">Appended operation operator.</param>
+        /// <param name="operand">Appended <see cref="IMdxExpressionOperand"/>.</param>
+        /// <returns>Returns the updated current <see cref="MdxExpression"/>.</returns>
+        public MdxExpression WithOperation(string operationOperator, IMdxExpressionOperand operand)
+        {
+            _operators.Add(operationOperator);
+            _operands.Add(operand);
+            
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the current expression as negative and returns the updated current <see cref="MdxExpression"/>.
+        /// </summary>
+        /// <returns>Returns the updated current <see cref="MdxExpression"/>.</returns>
         public MdxExpression AsNegative()
         {
             _isNegative = true;
             return this;
         }
 
+        /// <summary>
+        /// Marks the current expression as negative and returns the updated current <see cref="MdxExpression"/>.
+        /// </summary>
+        /// <returns>Returns the updated current <see cref="MdxExpression"/>.</returns>
         public MdxExpression AsNegated()
         {
             _isNot = true;
@@ -63,7 +104,7 @@ namespace BalticAmadeus.FluentMdx
             else
                 sb.Append(operandsEnumerator.Current);
 
-            foreach (var op in _operations)
+            foreach (var op in _operators)
             {
                 sb.Append(" ");
                 sb.Append(op);

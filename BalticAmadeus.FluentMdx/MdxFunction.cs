@@ -2,27 +2,44 @@
 
 namespace BalticAmadeus.FluentMdx
 {
-    public class MdxFunction : MdxExpressionBase, IMdxMember, IMdxExpressionOperand
+    /// <summary>
+    /// Represents Mdx function specificion.
+    /// </summary>
+    public sealed class MdxFunction : MdxExpressionBase, IMdxMember, IMdxExpressionOperand
     {
         private readonly IList<string> _titles;
         private readonly IList<MdxExpression> _parameters; 
         
+        /// <summary>
+        /// Initializes a new instance of <see cref="MdxFunction"/>.
+        /// </summary>
         public MdxFunction()
         {
             _titles = new List<string>();
             _parameters = new List<MdxExpression>();
         }
 
+        /// <summary>
+        /// Gets the collection of function titles.
+        /// </summary>
         public IEnumerable<string> Titles
         {
             get { return _titles; }
         }
 
+        /// <summary>
+        /// Gets the collection of applied function parameters.
+        /// </summary>
         public IEnumerable<MdxExpression> Parameters
         {
             get { return _parameters; }
         }
 
+        /// <summary>
+        /// Appends titles and returns updated current instance of <see cref="MdxFunction"/>.
+        /// </summary>
+        /// <param name="titles">Collection of titles.</param>
+        /// <returns>Returns updated current instance of <see cref="MdxFunction"/>.</returns>
         public MdxFunction Titled(params string[] titles)
         {
             foreach (var title in titles)
@@ -31,9 +48,16 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
-        public MdxFunction WithParameter(MdxExpression parameter)
+        /// <summary>
+        /// Appends specified parameters and returns updated current instance of <see cref="MdxFunction"/>.
+        /// </summary>
+        /// <param name="parameters">Collection of <see cref="MdxExpression"/> parameters.</param>
+        /// <returns>Returns updated current instance of <see cref="MdxFunction"/></returns>
+        public MdxFunction WithParameters(params MdxExpression[] parameters)
         {
-            _parameters.Add(parameter);
+            foreach (var parameter in parameters)
+                _parameters.Add(parameter);
+
             return this;
         }
 

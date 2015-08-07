@@ -37,18 +37,20 @@
   <ItemGroup>
     <Compile Include="EnumerableExtensions\IStatedTwoWayEnumerator.cs" />
     <Compile Include="EnumerableExtensions\StatedTwoWayEnumerator.cs" />
-    <Compile Include="EnumerableExtensions\TwoWayEnumeratorExtensions.cs" />
-    <Compile Include="Interfaces.cs" />
+    <Compile Include="EnumerableExtensions\StatedTwoWayEnumeratorExtensions.cs" />
+    <Compile Include="IMdxExpressionOperand.cs" />
+    <Compile Include="IMdxMember.cs" />
+    <Compile Include="IMdxParser.cs" />
     <Compile Include="Lexer\ILexer.cs" />
     <Compile Include="Lexer\Lexer.cs" />
     <Compile Include="Lexer\Token.cs" />
-    <Compile Include="Lexer\TokenDefinition.cs" />
     <Compile Include="Lexer\TokenType.cs" />
     <Compile Include="Mdx.cs" />
     <Compile Include="MdxAxis.cs" />
     <Compile Include="MdxConstantExpression.cs" />
     <Compile Include="MdxCube.cs" />
     <Compile Include="MdxExpression.cs" />
+    <Compile Include="MdxExpressionBase.cs" />
     <Compile Include="MdxFunction.cs" />
     <Compile Include="MdxNavigationFunction.cs" />
     <Compile Include="MdxMember.cs" />
