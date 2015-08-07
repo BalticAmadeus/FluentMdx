@@ -141,7 +141,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
         Select,
 
         /// <summary>
-        /// Denotes a value separator (<value>.&</value>).
+        /// Denotes a value separator (<value>.&amp;</value>).
         /// </summary>
         ValueSeparator,
 
