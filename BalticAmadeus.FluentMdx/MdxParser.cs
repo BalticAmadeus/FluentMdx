@@ -202,6 +202,10 @@ namespace BalticAmadeus.FluentMdx
                 {
                     tuple.With((MdxMember)childExpression);
                 }
+                else if (TryParseTuple(enumerator, out childExpression))
+                {
+                    tuple.With((MdxTuple)childExpression);
+                }
                 else if (TryParseSet(enumerator, out childExpression))
                 {
                     tuple.With((MdxSet)childExpression);
@@ -272,6 +276,10 @@ namespace BalticAmadeus.FluentMdx
                 else if (TryParseTuple(enumerator, out childExpression))
                 {
                     set.With((MdxTuple)childExpression);
+                }
+                else if (TryParseSet(enumerator, out childExpression))
+                {
+                    set.With((MdxSet)childExpression);
                 }
                 else if (TryParseFunction(enumerator, out childExpression))
                 {
@@ -501,7 +509,7 @@ namespace BalticAmadeus.FluentMdx
             }
             else if (TryParseFunction(enumerator, out slicer))
             {
-                axis.WithSlicer(Mdx.Tuple().With((MdxMember)slicer));
+                axis.WithSlicer(Mdx.Tuple().With((MdxFunction)slicer));
             }
             else
             {
