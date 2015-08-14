@@ -54,6 +54,7 @@
     <Compile Include="MdxExpression.cs" />
     <Compile Include="MdxExpressionBase.cs" />
     <Compile Include="MdxFunction.cs" />
+    <Compile Include="MdxDeclaration.cs" />
     <Compile Include="MdxNavigationFunction.cs" />
     <Compile Include="MdxMember.cs" />
     <Compile Include="MdxQuery.cs" />

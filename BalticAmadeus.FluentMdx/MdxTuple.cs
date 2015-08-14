@@ -6,7 +6,7 @@ namespace BalticAmadeus.FluentMdx
     /// <summary>
     /// Represents Mdx tuple.
     /// </summary>
-    public sealed class MdxTuple : MdxExpressionBase, IMdxMember, IMdxExpressionOperand
+    public sealed class MdxTuple : MdxExpressionBase, IMdxMember, IMdxExpression
     {
         private readonly IList<IMdxMember> _children;
         

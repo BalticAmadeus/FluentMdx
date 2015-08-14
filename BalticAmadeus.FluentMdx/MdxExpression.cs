@@ -7,9 +7,9 @@ namespace BalticAmadeus.FluentMdx
     /// <summary>
     /// Represents arithmetics, logics or equality expressions used in Mdx query.
     /// </summary>
-    public sealed class MdxExpression : MdxExpressionBase, IMdxExpressionOperand
+    public sealed class MdxExpression : MdxExpressionBase, IMdxExpression
     {
-        private readonly IList<IMdxExpressionOperand> _operands; 
+        private readonly IList<IMdxExpression> _operands; 
         private readonly IList<string> _operators;
         private bool _isNegative;
         private bool _isNot;
@@ -22,7 +22,7 @@ namespace BalticAmadeus.FluentMdx
             _isNegative = false;
             _isNot = false;
 
-            _operands = new List<IMdxExpressionOperand>();
+            _operands = new List<IMdxExpression>();
             _operators = new List<string>();
         }
 
@@ -38,12 +38,12 @@ namespace BalticAmadeus.FluentMdx
         }
 
         /// <summary>
-        /// Appends the <see cref="IMdxExpressionOperand"/> to the end of expression and 
+        /// Appends the <see cref="IMdxExpression"/> to the end of expression and 
         /// returns the updated current <see cref="MdxExpression"/>.
         /// </summary>
-        /// <param name="operand">Appended <see cref="IMdxExpressionOperand"/>.</param>
+        /// <param name="operand">Appended <see cref="IMdxExpression"/>.</param>
         /// <returns>Returns the updated current <see cref="MdxExpression"/>.</returns>
-        public MdxExpression WithOperand(IMdxExpressionOperand operand)
+        public MdxExpression WithOperand(IMdxExpression operand)
         {
             _operands.Add(operand);
             return this;
@@ -51,13 +51,13 @@ namespace BalticAmadeus.FluentMdx
 
 
         /// <summary>
-        /// Appends the specified operator and <see cref="IMdxExpressionOperand"/> to the 
+        /// Appends the specified operator and <see cref="IMdxExpression"/> to the 
         /// end of expression and returns the updated current <see cref="MdxExpression"/>.
         /// </summary>
         /// <param name="operationOperator">Appended operation operator.</param>
-        /// <param name="operand">Appended <see cref="IMdxExpressionOperand"/>.</param>
+        /// <param name="operand">Appended <see cref="IMdxExpression"/>.</param>
         /// <returns>Returns the updated current <see cref="MdxExpression"/>.</returns>
-        public MdxExpression WithOperation(string operationOperator, IMdxExpressionOperand operand)
+        public MdxExpression WithOperation(string operationOperator, IMdxExpression operand)
         {
             _operators.Add(operationOperator);
             _operands.Add(operand);

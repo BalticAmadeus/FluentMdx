@@ -1,4 +1,6 @@
-﻿namespace BalticAmadeus.FluentMdx
+﻿using System;
+
+namespace BalticAmadeus.FluentMdx
 {
     /// <summary>
     /// Mdx components factory, that can be used as a more fluent way of creating queries.
@@ -47,11 +49,32 @@
         /// </summary>
         /// <param name="title">Axis title.</param>
         /// <returns>Returns instance of <see cref="MdxAxis"/>.</returns>
+        [Obsolete("Use Axis(MdxAxis.MdxAxisType type) or Axis(int id) instead.")]
         public static MdxAxis Axis(string title)
         {
             return Axis().Titled(title);
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="MdxAxis"/> with specified typed-title.
+        /// </summary>
+        /// <param name="type">Axis title-type.</param>
+        /// <returns>Returns instance of <see cref="MdxAxis"/>.</returns>
+        public static MdxAxis Axis(MdxAxis.MdxAxisType type)
+        {
+            return Axis().Titled(type);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="MdxAxis"/> with specified id-title.
+        /// </summary>
+        /// <param name="id">Axis id-title.</param>
+        /// <returns>Returns instance of <see cref="MdxAxis"/>.</returns>
+        public static MdxAxis Axis(int id)
+        {
+            return Axis().Titled(id);
+        }
+        
         /// <summary>
         /// Creates a new instance of empty <see cref="MdxTuple"/>.
         /// </summary>
@@ -162,6 +185,16 @@
         public static MdxConstantExpression ConstantValue(string value)
         {
             return ConstantValue().WithValue(value);
+        }
+
+        internal static MdxDeclaration Declaration()
+        {
+            return new MdxDeclaration();
+        }
+
+        public static MdxDeclaration Declaration(params string[] titles)
+        {
+            return Declaration().Titled(titles);
         }
     }
 }

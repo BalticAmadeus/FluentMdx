@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents constant value used in Mdx statements.
     /// </summary>
-    public sealed class MdxConstantExpression : MdxExpressionBase, IMdxExpressionOperand
+    public sealed class MdxConstantExpression : MdxExpressionBase, IMdxExpression
     {
         /// <summary>
         /// Sets the value of expression and returns the instance of <see cref="MdxConstantExpression"/>.

@@ -5,6 +5,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
     /// </summary>
     internal enum TokenType
     {
+        As,
+
         /// <summary>
         /// Denotes an axis name identifier.
         /// </summary>
@@ -26,7 +28,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
         DimensionProperty,
 
         /// <summary>
-        /// Denotes a <value>Non</value> keyword.
+        /// Denotes a <value>Empty</value> keyword.
         /// </summary>
         Empty,
 
@@ -85,6 +87,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
         /// </summary>
         MathsOperator,
 
+        Member,
+
         /// <summary>
         /// Denotes a member separator (<value>,</value>).
         /// </summary>
@@ -109,6 +113,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
         /// Denotes an <value>On</value> keyword.
         /// </summary>
         On,
+
+        Ordering,
 
         /// <summary>
         /// Denotes a <value>Properties</value> keyword.
@@ -139,6 +145,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
         /// Denotes a <value>Select</value> keyword.
         /// </summary>
         Select,
+        
+        Set,
 
         /// <summary>
         /// Denotes a value separator (<value>.&amp;</value>).
@@ -148,6 +156,11 @@ namespace BalticAmadeus.FluentMdx.Lexer
         /// <summary>
         /// Denotes a <value>Where</value> keyword.
         /// </summary>
-        Where
+        Where,
+
+        /// <summary>
+        /// Denotes a <value>With</value> keyword.
+        /// </summary>
+        With,
     }
 }

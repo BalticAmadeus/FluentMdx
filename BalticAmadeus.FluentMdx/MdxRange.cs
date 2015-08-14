@@ -3,7 +3,7 @@ namespace BalticAmadeus.FluentMdx
     /// <summary>
     /// Represents Mdx members range.
     /// </summary>
-    public sealed class MdxRange : MdxExpressionBase, IMdxMember, IMdxExpressionOperand
+    public sealed class MdxRange : MdxExpressionBase, IMdxMember, IMdxExpression
     {
         /// <summary>
         /// Gets the starting <see cref="MdxMember"/> of range.

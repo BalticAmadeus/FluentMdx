@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BalticAmadeus.FluentMdx
 {
@@ -8,6 +10,37 @@ namespace BalticAmadeus.FluentMdx
     /// </summary>
     public sealed class MdxAxis : MdxExpressionBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum MdxAxisType
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            Columns = 0,
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            Rows = 1,
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            Pages = 2,
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            Chapters = 3,
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            Sections = 4
+        }
+
         private readonly IList<string> _properties;
 
         /// <summary>
@@ -17,15 +50,15 @@ namespace BalticAmadeus.FluentMdx
         {
             _properties = new List<string>();
 
+            AxisIdentifier = 0;
             AxisSlicer = null;
-            Title = null;
             IsNonEmpty = false;
         }
 
         /// <summary>
-        /// Gets the axis title.
+        /// Gets the axis number.
         /// </summary>
-        public string Title { get; private set; }
+        public MdxAxisType AxisIdentifier { get; private set; }
 
         /// <summary>
         /// Gets the axis slicer.
@@ -63,7 +96,43 @@ namespace BalticAmadeus.FluentMdx
         /// <returns>Returns the updated current instance of <see cref="MdxAxis"/>.</returns>
         public MdxAxis Titled(string title)
         {
-            Title = title;
+            int number;
+            if (int.TryParse(title, out number))
+                return Titled(number);
+
+            MdxAxisType type;
+            if (Enum.TryParse(title, true, out type))
+                return Titled(type);
+
+            if (!Regex.IsMatch(title, "^AXIS\\(\\d+\\)$", RegexOptions.IgnoreCase))
+                throw new ArgumentException("Invalid title specified!");
+
+            var numberMatch = Regex.Match(title, "\\d+");
+            if (int.TryParse(numberMatch.Value, out number))
+                return Titled((MdxAxisType) number);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the title for axis and returns the updated current instance of <see cref="MdxAxis"/>.
+        /// </summary>
+        /// <param name="type">Axis type.</param>
+        /// <returns>Returns the updated current instance of <see cref="MdxAxis"/>.</returns>
+        public MdxAxis Titled(MdxAxisType type)
+        {
+            AxisIdentifier = type;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the title for axis and returns the updated current instance of <see cref="MdxAxis"/>.
+        /// </summary>
+        /// <param name="number">Axis number.</param>
+        /// <returns>Returns the updated current instance of <see cref="MdxAxis"/>.</returns>
+        public MdxAxis Titled(int number)
+        {
+            AxisIdentifier = (MdxAxisType)number;
             return this;
         }
 
@@ -106,23 +175,23 @@ namespace BalticAmadeus.FluentMdx
                 if (!Properties.Any())
                     return string.Format(@"{0} ON {1}",
                         AxisSlicer,
-                        Title);
+                        AxisIdentifier);
 
                 return string.Format(@"{0} DIMENSION PROPERTIES {1} ON {2}",
                     AxisSlicer,
                     string.Join(", ", Properties),
-                    Title);
+                    AxisIdentifier);
             }
 
             if (!Properties.Any())
                 return string.Format(@"NON EMPTY {0} ON {1}",
-                    AxisSlicer, 
-                    Title);
+                    AxisSlicer,
+                    AxisIdentifier);
 
             return string.Format(@"NON EMPTY {0} DIMENSION PROPERTIES {1} ON {2}",
                 AxisSlicer,
                 string.Join(", ", Properties),
-                Title);
+                AxisIdentifier);
         }
     }
 }

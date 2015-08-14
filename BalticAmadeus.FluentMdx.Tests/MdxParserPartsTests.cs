@@ -55,9 +55,9 @@ namespace BalticAmadeus.FluentMdx.Tests
         public void ParseAxis_WithParameters_SecceedsAndReturnsAxis()
         {
             //ARRANGE   
-            const string queryString = "NON EMPTY { [Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION, [Aaa] } ON COLUMNS";
+            const string queryString = "NON EMPTY { [Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION, [Aaa] } ON Columns";
 
-            const string expectedString = "NON EMPTY { [Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION, [Aaa] } ON COLUMNS";
+            const string expectedString = "NON EMPTY { [Aaa].[Bbb].[Ccc].FUNCTION(1, 2).FUNCTION, [Aaa] } ON Columns";
 
             //ACT
             MdxExpressionBase expression;
@@ -73,9 +73,9 @@ namespace BalticAmadeus.FluentMdx.Tests
         public void ParseAxis_WithParameterAndDimensionProperties_SecceedsAndReturnsAxis()
         {
             //ARRANGE   
-            const string queryString = "NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON COLUMNS";
+            const string queryString = "NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON Columns";
 
-            const string expectedString = "NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON COLUMNS";
+            const string expectedString = "NON EMPTY { [Aaa] } DIMENSION PROPERTIES CATALOG_NAME, CUSTOM_ROLLUP ON Columns";
 
             //ACT
             MdxExpressionBase expression;

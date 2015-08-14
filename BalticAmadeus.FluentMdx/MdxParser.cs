@@ -65,14 +65,31 @@ namespace BalticAmadeus.FluentMdx
         {
             enumerator.SavePosition();
             expression = null;
+            
+            var query = Mdx.Query();
+            
+            if (IsNextTokenValid(enumerator, TokenType.With))
+            {
+                MdxExpressionBase declaration;
+                if (!TryParseWithDeclaration(enumerator, out declaration))
+                {
+                    enumerator.RestoreLastSavedPosition();
+                    return false;
+                }
+
+                query.With((MdxDeclaration)declaration);
+
+                while (TryParseWithDeclaration(enumerator, out declaration))
+                {
+                    query.With((MdxDeclaration)declaration);
+                }
+            }
 
             if (!IsNextTokenValid(enumerator, TokenType.Select))
             {
                 enumerator.RestoreLastSavedPosition();
                 return false;
             }
-
-            var query = Mdx.Query();
 
             do
             {
@@ -164,6 +181,90 @@ namespace BalticAmadeus.FluentMdx
             return true;
         }
 
+        internal static bool TryParseWithDeclaration(IStatedTwoWayEnumerator<Token> enumerator, out MdxExpressionBase expression)
+        {
+            enumerator.SavePosition();
+            expression = null;
+
+            var declaration = Mdx.Declaration();
+
+            if (!IsNextTokenValid(enumerator, TokenType.Member) && 
+                !IsNextTokenValid(enumerator, TokenType.Set))
+            {
+                enumerator.RestoreLastSavedPosition();
+                return false;
+            }
+
+            if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+            {
+                enumerator.RestoreLastSavedPosition();
+                return false;
+            }
+
+            if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+            {
+                enumerator.RestoreLastSavedPosition();
+                return false;
+            }
+
+            declaration.Titled(enumerator.Current.Value);
+
+            if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+            {
+                enumerator.RestoreLastSavedPosition();
+                return false;
+            }
+
+            while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator))
+            {
+                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+                {
+                    enumerator.RestoreLastSavedPosition();
+                    return false;
+                }
+
+                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                {
+                    enumerator.RestoreLastSavedPosition();
+                    return false;
+                }
+
+                declaration.Titled(enumerator.Current.Value);
+
+                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
+                {
+                    enumerator.RestoreLastSavedPosition();
+                    return false;
+                }
+            }
+
+            if (!IsNextTokenValid(enumerator, TokenType.As))
+            {
+                enumerator.RestoreLastSavedPosition();
+                return false;
+            }
+
+
+            MdxExpressionBase declarationExpression;
+            if (TryParseTuple(enumerator, out declarationExpression))
+            {
+                declaration.As((MdxTuple) declarationExpression);
+            }
+            else if (TryParseExpression(enumerator, out declarationExpression))
+            {
+                declaration.As((MdxExpression) declarationExpression);
+            }
+            else
+            {
+                enumerator.RestoreLastSavedPosition();
+                return false;
+            }
+
+            expression = declaration;
+            enumerator.RemoveLastSavedState();
+            return true;
+        }
+
         /// <summary>
         /// Performs tuple syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
         /// </summary>
@@ -233,7 +334,6 @@ namespace BalticAmadeus.FluentMdx
             enumerator.RemoveLastSavedState();
             return true;
         }
-
 
         /// <summary>
         /// Performs set syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
@@ -843,7 +943,8 @@ namespace BalticAmadeus.FluentMdx
             if (!IsNextTokenValid(enumerator, TokenType.LogicalExpression) && 
                 !IsNextTokenValid(enumerator, TokenType.DateExpression) &&
                 !IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression) && 
+                !IsNextTokenValid(enumerator, TokenType.Ordering))
             {
                 enumerator.RestoreLastSavedPosition();
                 return false;
@@ -860,7 +961,7 @@ namespace BalticAmadeus.FluentMdx
             enumerator.RemoveLastSavedState();
             return true;
         }
-
+        
         private static bool IsNextTokenValid(IStatedTwoWayEnumerator<Token> enumerator, TokenType expectedTokenType)
         {
             if (!enumerator.MoveNext())

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace BalticAmadeus.FluentMdx
 {
@@ -9,6 +10,7 @@ namespace BalticAmadeus.FluentMdx
     /// </summary>
     public sealed class MdxQuery : MdxExpressionBase
     {
+        private readonly IList<MdxDeclaration> _withDeclarations; 
         private readonly IList<MdxCube> _cubes;
         private readonly IList<MdxAxis> _axes;
         private readonly IList<MdxTuple> _whereClauseTuples;
@@ -20,7 +22,8 @@ namespace BalticAmadeus.FluentMdx
         {
             _axes = new List<MdxAxis>();
             _cubes = new List<MdxCube>();
-            _whereClauseTuples = new List<MdxTuple>();            
+            _whereClauseTuples = new List<MdxTuple>();
+            _withDeclarations = new List<MdxDeclaration>();
         }
 
         /// <summary>
@@ -105,30 +108,30 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
+        public MdxQuery With(MdxDeclaration withDeclaration)
+        {
+            _withDeclarations.Add(withDeclaration);
+            return this;
+        }
+
         protected override string GetStringExpression()
         {
+            var queryStringBuilder = new StringBuilder();
+
+            if (_withDeclarations.Any())
+                queryStringBuilder.AppendFormat("WITH {0} ", string.Join(" ", _withDeclarations));
+
+            queryStringBuilder.AppendFormat("SELECT {0} ", string.Join(", ", Axes));
+
             if (InnerQuery == null)
-            {
-                if (!WhereClauseTuples.Any())
-                    return string.Format(@"SELECT {0} FROM {1}",
-                        string.Join(", ", Axes),
-                        string.Join(", ", Cubes));
+                queryStringBuilder.AppendFormat("FROM {0}", string.Join(", ", Cubes));
+            else
+                queryStringBuilder.AppendFormat("FROM ( {0} )", InnerQuery);
 
-                return string.Format(@"SELECT {0} FROM {1} WHERE {{ ( {2} ) }}",
-                    string.Join(", ", Axes),
-                    string.Join(", ", Cubes),
-                    string.Join(", ", WhereClauseTuples));
-            }
+            if (_whereClauseTuples.Any())
+                queryStringBuilder.AppendFormat(" WHERE {{ ( {0} ) }}", string.Join(" ", _whereClauseTuples));
 
-            if (!WhereClauseTuples.Any())
-                return string.Format(@"SELECT {0} FROM ( {1} )",
-                    string.Join(", ", Axes),
-                    InnerQuery);
-
-            return string.Format(@"SELECT {0} FROM ( {1} ) WHERE {{ ( {2} ) }}",
-                string.Join(", ", Axes),
-                InnerQuery,
-                string.Join(", ", WhereClauseTuples));
+            return queryStringBuilder.ToString();
         }
     }
 }
