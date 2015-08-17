@@ -34,9 +34,9 @@ namespace BalticAmadeus.FluentMdx.Lexer
             new TokenDefinition(TokenType.RightCurlyBracket, @"\}"),
             new TokenDefinition(TokenType.LeftRoundBracket, @"\("),
             new TokenDefinition(TokenType.RightRoundBracket, @"\)"),
-            new TokenDefinition(TokenType.LeftSquareBracket, @"\["),
-            new TokenDefinition(TokenType.RightSquareBracket, @"\]"),
 
+            new TokenDefinition(TokenType.IdentifierExpression, @"\[[^\[\]]+\]"), //Any text between [ and ] brackets.
+            
             new TokenDefinition(TokenType.MemberSeparator, @"\,"),
             new TokenDefinition(TokenType.RangeSeparator, @"\:"),
             new TokenDefinition(TokenType.ValueSeparator, @"\.\&"),
@@ -50,7 +50,11 @@ namespace BalticAmadeus.FluentMdx.Lexer
             new TokenDefinition(TokenType.LogicsOperator, @"\b(AND|OR)\b"),
             new TokenDefinition(TokenType.MathsOperator, @"\+|\-|\*|\/|<=|>=|<>|<|=|>"),
 
-            new TokenDefinition(TokenType.IdentifierExpression, "[a-zA-Z0-9 \\/\\\\\\-\\:\\'\\\"]*[a-zA-Z0-9\\/\\\\\\-\\:\\'\\\"]"),
+            new TokenDefinition(TokenType.TitleExpression, @"\b[a-z_][a-z0-9_]*\b"),
+
+            //TODO: Add right square brackets to this shit or create new identifier
+            
+            new TokenDefinition(TokenType.AnyExpression, "[a-zA-Z0-9\\/\\\\\\-\\:\\'\\\"\\.]+"),
         };
 
         private readonly IEnumerable<TokenDefinition> _tokenDefinitions;

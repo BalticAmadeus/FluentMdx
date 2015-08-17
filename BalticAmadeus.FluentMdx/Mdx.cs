@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BalticAmadeus.FluentMdx
+﻿namespace BalticAmadeus.FluentMdx
 {
     /// <summary>
     /// Mdx components factory, that can be used as a more fluent way of creating queries.
@@ -45,22 +43,11 @@ namespace BalticAmadeus.FluentMdx
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="MdxAxis"/> with specified title.
-        /// </summary>
-        /// <param name="title">Axis title.</param>
-        /// <returns>Returns instance of <see cref="MdxAxis"/>.</returns>
-        [Obsolete("Use Axis(MdxAxis.MdxAxisType type) or Axis(int id) instead.")]
-        public static MdxAxis Axis(string title)
-        {
-            return Axis().Titled(title);
-        }
-
-        /// <summary>
         /// Creates a new instance of <see cref="MdxAxis"/> with specified typed-title.
         /// </summary>
         /// <param name="type">Axis title-type.</param>
         /// <returns>Returns instance of <see cref="MdxAxis"/>.</returns>
-        public static MdxAxis Axis(MdxAxis.MdxAxisType type)
+        public static MdxAxis Axis(MdxAxisType type)
         {
             return Axis().Titled(type);
         }
@@ -72,7 +59,7 @@ namespace BalticAmadeus.FluentMdx
         /// <returns>Returns instance of <see cref="MdxAxis"/>.</returns>
         public static MdxAxis Axis(int id)
         {
-            return Axis().Titled(id);
+            return Axis((MdxAxisType)id);
         }
         
         /// <summary>
@@ -192,7 +179,12 @@ namespace BalticAmadeus.FluentMdx
             return new MdxDeclaration();
         }
 
-        public static MdxDeclaration Declaration(params string[] titles)
+        public static MdxDeclaration DeclaredSet(params string[] titles)
+        {
+            return Declaration().Titled(titles);
+        }
+
+        public static MdxDeclaration DeclaredMember(params string[] titles)
         {
             return Declaration().Titled(titles);
         }

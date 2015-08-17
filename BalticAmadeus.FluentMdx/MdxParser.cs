@@ -195,56 +195,27 @@ namespace BalticAmadeus.FluentMdx
                 return false;
             }
 
-            if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+            do
             {
-                enumerator.RestoreLastSavedPosition();
-                return false;
-            }
-
-            if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
-            {
-                enumerator.RestoreLastSavedPosition();
-                return false;
-            }
-
-            declaration.Titled(enumerator.Current.Value);
-
-            if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
-            {
-                enumerator.RestoreLastSavedPosition();
-                return false;
-            }
-
-            while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator))
-            {
-                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
-                {
-                    enumerator.RestoreLastSavedPosition();
-                    return false;
-                }
-
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 {
                     enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
-                declaration.Titled(enumerator.Current.Value);
+                string identifierWithBrackets = enumerator.Current.Value;
+                string identifierTitle = identifierWithBrackets.Substring(1, identifierWithBrackets.Length - 2);
 
-                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
-                {
-                    enumerator.RestoreLastSavedPosition();
-                    return false;
-                }
-            }
+                declaration.Titled(identifierTitle);
 
+            } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
+            
             if (!IsNextTokenValid(enumerator, TokenType.As))
             {
                 enumerator.RestoreLastSavedPosition();
                 return false;
             }
-
-
+            
             MdxExpressionBase declarationExpression;
             if (TryParseTuple(enumerator, out declarationExpression))
             {
@@ -459,12 +430,6 @@ namespace BalticAmadeus.FluentMdx
             enumerator.SavePosition();
             expression = null;
 
-            if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
-            {
-                enumerator.RestoreLastSavedPosition();
-                return false;
-            }
-
             var member = Mdx.Member();
 
             if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
@@ -473,27 +438,18 @@ namespace BalticAmadeus.FluentMdx
                 return false;
             }
 
-            member.Titled(enumerator.Current.Value);
+            string identifierWithBrackets = enumerator.Current.Value;
+            string identifierTitle = identifierWithBrackets.Substring(1, identifierWithBrackets.Length - 2);
 
-            if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
-            {
-                enumerator.RestoreLastSavedPosition();
-                return false;
-            }
+            member.Titled(identifierTitle);
 
             while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator))
             {
                 MdxExpressionBase function;
                 if (TryParseNavigationFunction(enumerator, out function))
                 {
-                    member.WithFunction((MdxNavigationFunction) function);
+                    member.WithFunction((MdxNavigationFunction)function);
                     continue;
-                }
-
-                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
-                {
-                    enumerator.RestoreLastSavedPosition();
-                    return false;
                 }
 
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
@@ -502,14 +458,12 @@ namespace BalticAmadeus.FluentMdx
                     return false;
                 }
 
-                member.Titled(enumerator.Current.Value);
+                identifierWithBrackets = enumerator.Current.Value;
+                identifierTitle = identifierWithBrackets.Substring(1, identifierWithBrackets.Length - 2);
 
-                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
-                {
-                    enumerator.RestoreLastSavedPosition();
-                    return false;
-                }
-            }
+                member.Titled(identifierTitle);
+
+            } 
 
             if (!IsNextTokenValid(enumerator, TokenType.ValueSeparator))
             {
@@ -519,34 +473,16 @@ namespace BalticAmadeus.FluentMdx
                 return true;
             }
 
-            if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
+            if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
             {
                 enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
-            if (!IsNextTokenValid(enumerator, TokenType.LogicalExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.DateExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.MathsOperator))
-            {
-                enumerator.RestoreLastSavedPosition();
-                return false;
-            }
+            string valueWithBrackets = enumerator.Current.Value;
+            string value = valueWithBrackets.Substring(1, valueWithBrackets.Length - 2);
 
-            var memberValue = enumerator.Current.Value;
-
-            if (IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
-                memberValue += enumerator.Current.Value;
-
-            member.WithValue(memberValue);
-
-            if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
-            {
-                enumerator.RestoreLastSavedPosition();
-                return false;
-            }
+            member.WithValue(value);
 
             while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator))
             {
@@ -687,26 +623,17 @@ namespace BalticAmadeus.FluentMdx
 
             do
             {
-                if (!IsNextTokenValid(enumerator, TokenType.LeftSquareBracket))
-                {
-                    enumerator.RestoreLastSavedPosition();
-                    return false;
-                }
-
                 if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
                 {
                     enumerator.RestoreLastSavedPosition();
                     return false;
                 }
 
-                cube.Titled(enumerator.Current.Value);
+                string cubeTitleWithBrackets = enumerator.Current.Value;
+                string cubeTitle = cubeTitleWithBrackets.Substring(1, cubeTitleWithBrackets.Length - 2);
 
-                if (!IsNextTokenValid(enumerator, TokenType.RightSquareBracket))
-                {
-                    enumerator.RestoreLastSavedPosition();
-                    return false;
-                }
-                
+                cube.Titled(cubeTitle);
+
             } while (IsNextTokenValid(enumerator, TokenType.IdentifierSeparator));
 
             expression = cube;
@@ -726,30 +653,31 @@ namespace BalticAmadeus.FluentMdx
             enumerator.SavePosition();
             expression = null;
 
-            if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression) &&
+            var navigationFunction = Mdx.NavigationFunction();
+
+            if (!IsNextTokenValid(enumerator, TokenType.TitleExpression) &&
                 !IsNextTokenValid(enumerator, TokenType.DimensionProperty))
             {
                 enumerator.RestoreLastSavedPosition();
                 return false;
             }
 
-            var functionTitle = enumerator.Current.Value;
+            navigationFunction.Titled(enumerator.Current.Value);
 
             if (!IsNextTokenValid(enumerator, TokenType.LeftRoundBracket))
             {
-                expression = Mdx.NavigationFunction().Titled(functionTitle);
+                expression = navigationFunction;
 
                 enumerator.RemoveLastSavedState();
                 return true;
             }
             
-            var functionParameters = new List<string>();
             do
             {
                 if (!IsNextTokenValid(enumerator, TokenType.LogicalExpression) &&
                     !IsNextTokenValid(enumerator, TokenType.DateExpression) &&
                     !IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                    !IsNextTokenValid(enumerator, TokenType.IdentifierExpression) &&
+                    !IsNextTokenValid(enumerator, TokenType.AnyExpression) &&
                     !IsNextTokenValid(enumerator, TokenType.MathsOperator))
                 {
                     enumerator.RestoreLastSavedPosition();
@@ -758,10 +686,10 @@ namespace BalticAmadeus.FluentMdx
 
                 var functionParametersValue = enumerator.Current.Value;
 
-                if (IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                if (IsNextTokenValid(enumerator, TokenType.AnyExpression))
                     functionParametersValue += enumerator.Current.Value;
 
-                functionParameters.Add(functionParametersValue);
+                navigationFunction.WithParameters(functionParametersValue);
 
             } while (IsNextTokenValid(enumerator, TokenType.MemberSeparator));
 
@@ -771,7 +699,7 @@ namespace BalticAmadeus.FluentMdx
                 return false;
             }
 
-            expression = Mdx.NavigationFunction().Titled(functionTitle).WithParameters(functionParameters.ToArray());
+            expression = navigationFunction;
 
             enumerator.RemoveLastSavedState();
             return true;
@@ -789,9 +717,10 @@ namespace BalticAmadeus.FluentMdx
             expression = null;
 
             var function = Mdx.Function();
+
             do
             {
-                if (!IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+                if (!IsNextTokenValid(enumerator, TokenType.TitleExpression))
                 {
                     enumerator.RestoreLastSavedPosition();
                     return false;
@@ -940,10 +869,11 @@ namespace BalticAmadeus.FluentMdx
 
             var constantValue = Mdx.ConstantValue();
 
-            if (!IsNextTokenValid(enumerator, TokenType.LogicalExpression) && 
+            if (!IsNextTokenValid(enumerator, TokenType.LogicalExpression) &&
                 !IsNextTokenValid(enumerator, TokenType.DateExpression) &&
+                !IsNextTokenValid(enumerator, TokenType.TitleExpression) &&
                 !IsNextTokenValid(enumerator, TokenType.NumberExpression) &&
-                !IsNextTokenValid(enumerator, TokenType.IdentifierExpression) && 
+                !IsNextTokenValid(enumerator, TokenType.AnyExpression) && 
                 !IsNextTokenValid(enumerator, TokenType.Ordering))
             {
                 enumerator.RestoreLastSavedPosition();
@@ -951,7 +881,7 @@ namespace BalticAmadeus.FluentMdx
             }
 
             string constantVal = enumerator.Current.Value;
-            if (IsNextTokenValid(enumerator, TokenType.IdentifierExpression))
+            if (IsNextTokenValid(enumerator, TokenType.AnyExpression))
                 constantVal += enumerator.Current.Value;
 
             constantValue.WithValue(constantVal);

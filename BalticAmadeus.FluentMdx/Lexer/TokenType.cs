@@ -5,6 +5,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
     /// </summary>
     internal enum TokenType
     {
+        AnyExpression,
+
         As,
 
         /// <summary>
@@ -43,11 +45,6 @@ namespace BalticAmadeus.FluentMdx.Lexer
         From,
 
         /// <summary>
-        /// Denotes any sequence of characters as identifier expression.
-        /// </summary>
-        IdentifierExpression,
-
-        /// <summary>
         /// Denotes an identifier separator (<value>.</value>).
         /// </summary>
         IdentifierSeparator,
@@ -70,7 +67,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
         /// <summary>
         /// Denotes the member or member value openning bracket (<value>[</value>).
         /// </summary>
-        LeftSquareBracket,
+        //LeftSquareBracket,
 
         /// <summary>
         /// Denotes the <value>True</value> or <value>False</value> logical constants.
@@ -139,7 +136,7 @@ namespace BalticAmadeus.FluentMdx.Lexer
         /// <summary>
         /// Denotes the identifier closing bracket (<value>]</value>).
         /// </summary>
-        RightSquareBracket,
+        //RightSquareBracket,
 
         /// <summary>
         /// Denotes a <value>Select</value> keyword.
@@ -162,5 +159,8 @@ namespace BalticAmadeus.FluentMdx.Lexer
         /// Denotes a <value>With</value> keyword.
         /// </summary>
         With,
+
+        IdentifierExpression,
+        TitleExpression
     }
 }

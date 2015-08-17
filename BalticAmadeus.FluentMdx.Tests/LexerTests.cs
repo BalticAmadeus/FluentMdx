@@ -22,12 +22,12 @@ namespace BalticAmadeus.FluentMdx.Tests
         public void Tokenize_WithUndefinedSymbol_ThrowsExceptionWithMessage()
         {
             //ARRANGE
-            string source = "[$]";
+            string source = "[[]";
 
             //ACT
             //ASSERT
             var ex = Assert.Throws<Exception>(() => _lexer.Tokenize(source).ToList());
-            Assert.That(ex.Message, Is.EqualTo("Unrecognized symbol '$'."));
+            Assert.That(ex.Message, Is.EqualTo("Unrecognized symbol '['."));
         }
 
         [Test]
@@ -38,21 +38,13 @@ namespace BalticAmadeus.FluentMdx.Tests
 
             var expectedTokens = new List<Token>
             {
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Aaa"),
-                new Token(TokenType.RightSquareBracket, "]"),
+                new Token(TokenType.IdentifierExpression, "[Aaa]"),
                 new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Bbb"),
-                new Token(TokenType.RightSquareBracket, "]"),
+                new Token(TokenType.IdentifierExpression, "[Bbb]"),
                 new Token(TokenType.IdentifierSeparator, "."),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.IdentifierExpression, "Ccc"),
-                new Token(TokenType.RightSquareBracket, "]"),
+                new Token(TokenType.IdentifierExpression, "[Ccc]"),
                 new Token(TokenType.ValueSeparator, ".&"),
-                new Token(TokenType.LeftSquareBracket, "["),
-                new Token(TokenType.NumberExpression, "1"),
-                new Token(TokenType.RightSquareBracket, "]"),
+                new Token(TokenType.IdentifierExpression, "[1]"),
                 new Token(TokenType.LastToken, ""),
             };
 

@@ -6,41 +6,41 @@ using System.Text.RegularExpressions;
 namespace BalticAmadeus.FluentMdx
 {
     /// <summary>
-    /// Represents Mdx query axis specification.
+    /// 
     /// </summary>
-    public sealed class MdxAxis : MdxExpressionBase
+    public enum MdxAxisType
     {
         /// <summary>
         /// 
         /// </summary>
-        public enum MdxAxisType
-        {
-            /// <summary>
-            /// 
-            /// </summary>
-            Columns = 0,
-            
-            /// <summary>
-            /// 
-            /// </summary>
-            Rows = 1,
-            
-            /// <summary>
-            /// 
-            /// </summary>
-            Pages = 2,
-            
-            /// <summary>
-            /// 
-            /// </summary>
-            Chapters = 3,
-            
-            /// <summary>
-            /// 
-            /// </summary>
-            Sections = 4
-        }
+        Columns = 0,
 
+        /// <summary>
+        /// 
+        /// </summary>
+        Rows = 1,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Pages = 2,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Chapters = 3,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Sections = 4
+    }
+
+    /// <summary>
+    /// Represents Mdx query axis specification.
+    /// </summary>
+    public sealed class MdxAxis : MdxExpressionBase
+    {
         private readonly IList<string> _properties;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace BalticAmadeus.FluentMdx
         {
             _properties = new List<string>();
 
-            AxisIdentifier = 0;
+            AxisIdentifier = MdxAxisType.Columns;
             AxisSlicer = null;
             IsNonEmpty = false;
         }

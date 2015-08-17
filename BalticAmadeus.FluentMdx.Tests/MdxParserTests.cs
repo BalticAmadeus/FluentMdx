@@ -299,12 +299,12 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ARRANGE   
             const string queryString = "SELECT " +
                                        "NON EMPTY { [Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3] } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON Columns, " +
-                                       "NON EMPTY { [Dim Hierarchy2].[Dim1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON Rows " +
+                                       "NON EMPTY { [Dim Hierarchy2].[D.im1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON Rows " +
                                        "FROM [Cube]";
 
             const string expectedString = "SELECT " +
                                           "NON EMPTY { [Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3] } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON Columns, " +
-                                          "NON EMPTY { [Dim Hierarchy2].[Dim1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON Rows " +
+                                          "NON EMPTY { [Dim Hierarchy2].[D.im1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON Rows " +
                                           "FROM [Cube]";
 
             //ACT
@@ -344,22 +344,18 @@ namespace BalticAmadeus.FluentMdx.Tests
         [Test]
         public void ParseQuery_WithQueryWithClause_ReturnsParsedQuery()
         {
-            //ARRANGE   
-            const string queryString = "WITH MEMBER [A] AS 1 " +
-                                       "SELECT \n\r" +
-                                       "NON EMPTY { [Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3] } ON Columns, " +
-                                       "NON EMPTY { [Dim Hierarchy2].[Dim1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } ON Rows " +
-                                       "FROM ( " +
-                                       "SELECT (Filter([Dim Hierarchy2].[Dim1].MEMBERS, NOT [Dim Hierarchy2].[Dim1].CurrentMember.MEMBER_CAPTION = \"V\")) ON 0 FROM [Cube] " +
-                                       ")";
+            const string statement = "SELECT " +
+                               "NON EMPTY { [Measures].[Active Days], [Measures].[Distance Sailed], [Measures].[Speed Loss Factor], [Measures].[Ton x nm], [Measures].[Consumed Hfo], [Measures].[Consumed Mgo], [Measures].[Consumed Total], [Measures].[g/ton-nm], [Measures].[kg/nm] } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON COLUMNS, " +
+                               "NON EMPTY { [Vessel].[Vessel Name], [Vessel].[Vessel Name].Children } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON ROWS " +
+                               "FROM ( SELECT { ( { [Vessel].[Vessel Plant Id].&[BOH], [Vessel].[Vessel Plant Id].&[CRM] }, { [Date].[Date].&[2014-07-21T00:00:00]:[Date].[Date].&[2015-08-22T00:00:00] }, { [Operation Mode].[Operation Mode Text].&[Harbour Out], [Operation Mode].[Operation Mode Text].&[Sea passage], [Operation Mode].[Operation Mode Text].&[Idling], [Operation Mode].[Operation Mode Text].&[Harbour In] }, { [Company].[Company Name].&[FakeVessel] } ) } ON 0 FROM [TransportWork] )";
 
-            const string expectedString = "WITH MEMBER [A] AS 1 " +
-                                          "SELECT " +
-                                          "NON EMPTY { [Dim Hierarchy1].[Dim1], [Dim Hierarchy1].[Dim2], [Dim Hierarchy1].[Dim3] } ON Columns, " +
-                                          "NON EMPTY { [Dim Hierarchy2].[Dim1], ORDER([Dim Hierarchy2].[Dim2].Children, [Dim Hierarchy2].[Dim2].CurrentMember.MEMBER_CAPTION, asc) } ON Rows " +
-                                          "FROM ( " +
-                                          "SELECT { ( Filter([Dim Hierarchy2].[Dim1].MEMBERS, (NOT ([Dim Hierarchy2].[Dim1].CurrentMember.MEMBER_CAPTION = \"V\"))) ) } ON Columns FROM [Cube] " +
-                                          ")";
+            //ARRANGE   
+            const string queryString = statement;
+
+            const string expectedString = "SELECT " +
+                               "NON EMPTY { [Measures].[Active Days], [Measures].[Distance Sailed], [Measures].[Speed Loss Factor], [Measures].[Ton x nm], [Measures].[Consumed Hfo], [Measures].[Consumed Mgo], [Measures].[Consumed Total], [Measures].[g/ton-nm], [Measures].[kg/nm] } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON COLUMNS, " +
+                               "NON EMPTY { [Vessel].[Vessel Name], [Vessel].[Vessel Name].Children } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON ROWS " +
+                               "FROM ( SELECT { ( { [Vessel].[Vessel Plant Id].&[BOH], [Vessel].[Vessel Plant Id].&[CRM] }, { [Date].[Date].&[2014-07-21T00:00:00]:[Date].[Date].&[2015-08-22T00:00:00] }, { [Operation Mode].[Operation Mode Text].&[Harbour Out], [Operation Mode].[Operation Mode Text].&[Sea passage], [Operation Mode].[Operation Mode Text].&[Idling], [Operation Mode].[Operation Mode Text].&[Harbour In] }, { [Company].[Company Name].&[FakeVessel] } ) } ON 0 FROM [TransportWork] )";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);
