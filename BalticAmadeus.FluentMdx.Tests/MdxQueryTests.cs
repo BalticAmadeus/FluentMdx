@@ -115,5 +115,26 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ASSERT
             Assert.That(query.ToString(), Is.EqualTo(expectedQueryString));
         }
+
+        [Test]
+        public void AppendQuery_OneWhere_ExtendedWhereClause()
+        {
+            //ARRANGE
+            const string initialQueryString = "SELECT { [MyMember] } ON Columns " +
+                                   "FROM [Cube] " +
+                                   "WHERE { ( { ( [Test].[Test Name].&[test] ) }) }";
+                                    
+
+            const string expectedQueryString = "SELECT { [MyMember] } ON Columns " +
+                                               "FROM [Cube] " +
+                                               "WHERE { ( { ( { ( [Test].[Test Name].&[test] ) } ) }, { [Company].[Company Name].&[test] } ) }";
+
+            //ACT
+            var mdxQuery = new MdxParser().ParseQuery(initialQueryString);
+            mdxQuery.Where(Mdx.Tuple().With(Mdx.Member("Company", "Company Name").WithValue("test")));
+
+            //ASSERT
+            Assert.That(mdxQuery.ToString(), Is.EqualTo(expectedQueryString));
+        }
     }
 }

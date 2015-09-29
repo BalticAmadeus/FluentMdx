@@ -353,9 +353,9 @@ namespace BalticAmadeus.FluentMdx.Tests
             const string queryString = statement;
 
             const string expectedString = "SELECT " +
-                               "NON EMPTY { [Measures].[Active Days], [Measures].[Distance Sailed], [Measures].[Speed Loss Factor], [Measures].[Ton x nm], [Measures].[Consumed Hfo], [Measures].[Consumed Mgo], [Measures].[Consumed Total], [Measures].[g/ton-nm], [Measures].[kg/nm] } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON COLUMNS, " +
-                               "NON EMPTY { [Vessel].[Vessel Name], [Vessel].[Vessel Name].Children } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON ROWS " +
-                               "FROM ( SELECT { ( { [Vessel].[Vessel Plant Id].&[BOH], [Vessel].[Vessel Plant Id].&[CRM] }, { [Date].[Date].&[2014-07-21T00:00:00]:[Date].[Date].&[2015-08-22T00:00:00] }, { [Operation Mode].[Operation Mode Text].&[Harbour Out], [Operation Mode].[Operation Mode Text].&[Sea passage], [Operation Mode].[Operation Mode Text].&[Idling], [Operation Mode].[Operation Mode Text].&[Harbour In] }, { [Company].[Company Name].&[FakeVessel] } ) } ON 0 FROM [TransportWork] )";
+                               "NON EMPTY { [Measures].[Active Days], [Measures].[Distance Sailed], [Measures].[Speed Loss Factor], [Measures].[Ton x nm], [Measures].[Consumed Hfo], [Measures].[Consumed Mgo], [Measures].[Consumed Total], [Measures].[g/ton-nm], [Measures].[kg/nm] } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON Columns, " +
+                               "NON EMPTY { [Vessel].[Vessel Name], [Vessel].[Vessel Name].Children } DIMENSION PROPERTIES CHILDREN_CARDINALITY, PARENT_UNIQUE_NAME ON Rows " +
+                               "FROM ( SELECT { ( { [Vessel].[Vessel Plant Id].&[BOH], [Vessel].[Vessel Plant Id].&[CRM] }, { [Date].[Date].&[2014-07-21T00:00:00]:[Date].[Date].&[2015-08-22T00:00:00] }, { [Operation Mode].[Operation Mode Text].&[Harbour Out], [Operation Mode].[Operation Mode Text].&[Sea passage], [Operation Mode].[Operation Mode Text].&[Idling], [Operation Mode].[Operation Mode Text].&[Harbour In] }, { [Company].[Company Name].&[FakeVessel] } ) } ON Columns FROM [TransportWork] )";
 
             //ACT
             var query = _parserSut.ParseQuery(queryString);

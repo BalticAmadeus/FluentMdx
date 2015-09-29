@@ -129,7 +129,7 @@ namespace BalticAmadeus.FluentMdx
                 queryStringBuilder.AppendFormat("FROM ( {0} )", InnerQuery);
 
             if (_whereClauseTuples.Any())
-                queryStringBuilder.AppendFormat(" WHERE {{ ( {0} ) }}", string.Join(" ", _whereClauseTuples));
+                queryStringBuilder.AppendFormat(" WHERE {{ ( {0} ) }}", string.Join(", ", _whereClauseTuples));
 
             return queryStringBuilder.ToString();
         }
