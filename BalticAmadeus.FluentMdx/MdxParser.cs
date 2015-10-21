@@ -54,7 +54,42 @@ namespace BalticAmadeus.FluentMdx
 
             return (MdxQuery) expression;
         }
-       
+
+        /// <summary>
+        /// Performs syntactic analysis on text and if suceeds, returns constructed <see cref="MdxMember"/> as a result.
+        /// </summary>
+        /// <param name="source">String containing Mdx Member text representation.</param>
+        /// <returns>Instance of parsed <see cref="MdxMember"/>.</returns>
+        public MdxMember ParseMember(string source)
+        {
+            string trimmedSource = source.Trim();
+
+            var tokens = _lexer.Tokenize(trimmedSource);
+
+            var enumerator = tokens.GetStatedTwoWayEnumerator();
+
+            MdxExpressionBase expression;
+            if (!TryParseMember(enumerator, out expression))
+            {
+                var tokensLeft = new List<Token>();
+                while (enumerator.MoveNext())
+                    tokensLeft.Add(enumerator.Current);
+
+                throw new ArgumentException(string.Format("Cannot parse the expression. There are no such rules. {0}.", string.Join(", ", tokensLeft)));
+            }
+
+            if (!IsNextTokenValid(enumerator, TokenType.LastToken))
+            {
+                var tokensLeft = new List<Token>();
+                while (enumerator.MoveNext())
+                    tokensLeft.Add(enumerator.Current);
+
+                throw new ArgumentException(string.Format("There are tokens left in expression. {0}.", string.Join(", ", tokensLeft)));
+            }
+
+            return (MdxMember)expression;
+        }
+
         /// <summary>
         /// Performs query syntactical analysis over collection of <see cref="Token"/> objects using <see cref="IStatedTwoWayEnumerator{T}"/>.
         /// </summary>

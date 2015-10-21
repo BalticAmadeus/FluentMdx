@@ -15,6 +15,13 @@ namespace BalticAmadeus.FluentMdx
         private bool _isNot;
 
         /// <summary>
+        /// List of MdxExpression Operands
+        /// </summary>
+        public IEnumerable<IMdxExpression> Operands {
+            get { return _operands; }
+        }
+
+        /// <summary>
         /// Initializes a new instance of <see cref="MdxExpression"/>.
         /// </summary>
         public MdxExpression()

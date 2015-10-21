@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using NUnit.Framework;
 
 namespace BalticAmadeus.FluentMdx.Tests
@@ -363,6 +364,25 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ASSERT
             Assert.That(query, Is.Not.Null);
             Assert.That(query.ToString(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void ParseMember_WithNavigationFx_MemberCreatedAsExpected()
+        {
+            //ARRANGE
+            const string memberString = "[Test].[Test By One].CurrentMember.MEMBER_VALUE";
+
+            //ACT
+            var member = _parserSut.ParseMember(memberString);
+
+            //ASSERT
+            var navFx = member.NavigationFunctions.ToList();
+            var navTitles = member.Titles.ToList();
+            Assert.That(member.ToString(), Is.EqualTo(memberString));
+            Assert.AreEqual(navFx[0].Title, "CurrentMember");
+            Assert.AreEqual(navFx[1].Title, "MEMBER_VALUE");
+            Assert.AreEqual(navTitles[0], "Test");
+            Assert.AreEqual(navTitles[1], "Test By One");
         }
     }
 }
