@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using NUnit.Framework;
 
 namespace BalticAmadeus.FluentMdx.Tests
@@ -132,6 +133,31 @@ namespace BalticAmadeus.FluentMdx.Tests
             //ACT
             var mdxQuery = new MdxParser().ParseQuery(initialQueryString);
             mdxQuery.Where(Mdx.Tuple().With(Mdx.Member("Company", "Company Name").WithValue("test")));
+
+            //ASSERT
+            Assert.That(mdxQuery.ToString(), Is.EqualTo(expectedQueryString));
+        }
+
+        [Test]
+        public void ChangeQuery_OneAxisSlicer_RemoveSetMember()
+        {
+            //ARRANGE
+            const string initialQueryString = "SELECT { [MyMember], [MemberToRemove] } ON Columns " +
+                                   "FROM [Cube]";
+
+
+            const string expectedQueryString = "SELECT { [MyMember] } ON Columns " +
+                                   "FROM [Cube]";
+
+            //ACT
+            var mdxQuery = new MdxParser().ParseQuery(initialQueryString);
+
+            var tuple = mdxQuery.Axes.Select(a => a.AxisSlicer).FirstOrDefault();
+            if (tuple != null)
+            {
+                var memberToRemove = tuple.GetMember("MemberToRemove");
+                tuple.Without(memberToRemove);
+            }
 
             //ASSERT
             Assert.That(mdxQuery.ToString(), Is.EqualTo(expectedQueryString));

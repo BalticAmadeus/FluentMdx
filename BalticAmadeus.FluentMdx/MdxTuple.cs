@@ -168,6 +168,51 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
+        /// <summary>
+        /// Removes the specified <see cref="IMdxMember"/> and returns the updated current instance of <see cref="MdxTuple"/>.
+        /// </summary>
+        /// <param name="member">Returns the updated current instance of <see cref="MdxTuple"/>.</param>
+        /// <returns></returns>
+        public MdxTuple Without(IMdxMember member)
+        {
+            if (member is MdxMember)
+                return Without((MdxMember) member);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes the specified <see cref="MdxMember"/> and returns the updated current instance of <see cref="MdxTuple"/>. 
+        /// </summary>
+        /// <param name="member">Specified <see cref="MdxMember"/>.</param>
+        /// <returns>Returns the updated current instance of <see cref="MdxTuple"/>.</returns>
+        public MdxTuple Without(MdxMember member)
+        {
+            var lastSet = _children.OfType<MdxSet>().LastOrDefault();
+            if (lastSet == null)
+            {
+                _children.Remove(member);
+
+                return this;
+            }
+
+            lastSet.Without(member);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Get set member by member name 
+        /// </summary>
+        /// <param name="memberName"></param>
+        /// <returns>Returns set member</returns>
+        public MdxMember GetMember(string memberName)
+        {
+            return _children
+                .OfType<MdxMember>()
+                .FirstOrDefault(m => m.Titles.Contains(memberName));
+        }
+
         protected override string GetStringExpression()
         {
             return string.Format("{{ {0} }}", string.Join(", ", Children));

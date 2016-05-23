@@ -168,6 +168,16 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
+        /// <summary>
+        /// Get set member by member name 
+        /// </summary>
+        /// <param name="memberName"></param>
+        /// <returns>Returns set member</returns>
+        public MdxMember GetMember(string memberName)
+        {
+            return AxisSlicer.GetMember(memberName);
+        }
+
         protected override string GetStringExpression()
         {
             if (!IsNonEmpty)

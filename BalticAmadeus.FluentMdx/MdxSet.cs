@@ -170,6 +170,28 @@ namespace BalticAmadeus.FluentMdx
             return this;
         }
 
+        /// <summary>
+        /// Removes the specified <see cref="MdxMember"/> and returns the updated current instance of <see cref="MdxSet"/>. 
+        /// If there are any <see cref="MdxTuple"/>s in <see cref="Children"/> then specified <see cref="MdxMember"/> 
+        /// is appended to the last <see cref="MdxTuple"/>.
+        /// </summary>
+        /// <param name="member">Specified <see cref="MdxMember"/>.</param>
+        /// <returns>Returns the updated current instance of <see cref="MdxSet"/>.</returns>
+        public MdxSet Without(MdxMember member)
+        {
+            var lastTuple = _children.OfType<MdxTuple>().LastOrDefault();
+            if (lastTuple == null)
+            {
+                _children.Remove(member);
+
+                return this;
+            }
+
+            lastTuple.Without(member);
+
+            return this;
+        }
+
         protected override string GetStringExpression()
         {
             return string.Format("( {0} )", string.Join(", ", Children));
